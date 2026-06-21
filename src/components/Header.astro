@@ -1,0 +1,27 @@
+---
+const navLinks = [
+  { href: '/', label: 'Головна' },
+  { href: '/about', label: 'Про мене' },
+  { href: '/articles', label: 'Статті' },
+]
+
+const currentPath = Astro.url.pathname
+---
+
+<header class="border-b border-gray-200">
+  <nav class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="/" class="font-bold text-lg">Мій блог</a>
+    <ul class="flex gap-6">
+      {navLinks.map(link => (
+        <li>
+          <a
+            href={link.href}
+            class={`text-sm transition-colors hover:text-black ${currentPath === link.href ? 'text-black font-medium' : 'text-gray-500'}`}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
