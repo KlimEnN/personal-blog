@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getPublishedArticles, getArticleBySlug } from '../../lib/notion'
+
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles()
+  return articles.map(article => ({
+    params: { slug: article.slug },
+  }))
+}
+
+const { slug } = Astro.params
+const article = await getArticleBySlug(slug)
+
+if (!article) return Astro.redirect('/articles')
+---
+
+<Layout title={article.title}>
+  <main class="max-w-2xl mx-auto px-4 py-16">
+    <a href="/articles" class="text-sm text-gray-400 hover:text-gray-600 mb-8 block">← Всі статті</a>
+    <h1 class="text-4xl font-bold mb-4">{article.title}</h1>
+    <time class="text-sm text-gray-400 mb-10 block">
+      {new Date(article.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </time>
+    <article class="prose prose-gray max-w-none" set:html={article.content} />
+  </main>
+</Layout>

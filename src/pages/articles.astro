@@ -1,10 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { getPublishedArticles } from '../lib/notion'
+
+const articles = await getPublishedArticles()
 ---
 
 <Layout title="Статті" description="Всі статті Клименка Андрія про технології, розробку та інші теми.">
   <main class="max-w-2xl mx-auto px-4 py-16">
-    <h1 class="text-4xl font-bold mb-6">Статті</h1>
-    <p class="text-gray-500">Статей поки немає.</p>
+    <h1 class="text-4xl font-bold mb-10">Статті</h1>
+    {articles.length === 0 ? (
+      <p class="text-gray-500">Статей поки немає.</p>
+    ) : (
+      <ul class="space-y-8">
+        {articles.map(article => (
+          <li>
+            <a href={`/articles/${article.slug}`} class="group block">
+              <h2 class="text-xl font-semibold group-hover:text-gray-600 transition-colors">{article.title}</h2>
+              <time class="text-sm text-gray-400 mt-1 block">
+                {new Date(article.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
   </main>
 </Layout>
