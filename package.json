@@ -17,6 +17,7 @@
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.1",
     "astro": "^6.4.7",
+    "marked": "^18.0.5",
     "notion-to-md": "^3.1.9",
     "tailwindcss": "^4.3.1"
   },

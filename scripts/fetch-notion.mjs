@@ -2,6 +2,7 @@ import { createRequire } from 'module'
 import { writeFileSync, mkdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { marked } from 'marked'
 
 const require = createRequire(import.meta.url)
 const { Client } = require('@notionhq/client')
@@ -34,7 +35,7 @@ for (const page of response.results) {
   const createdAt = page.created_time
 
   const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
-  const content = md.markdown ?? ''
+  const content = marked(md.markdown ?? '')
 
   articles.push({ id: page.id, title, slug, createdAt, content })
   console.log(`  ✓ ${title}`)
