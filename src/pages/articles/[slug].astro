@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import { getPublishedArticles, getArticleBySlug } from '../../lib/notion'
+import { SITE } from '../../config/site'
 
 export function getStaticPaths() {
   const articles = getPublishedArticles()
@@ -13,20 +14,190 @@ const { slug } = Astro.params
 const article = getArticleBySlug(slug)
 
 if (!article) return Astro.redirect('/articles')
+
+const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
+  year: 'numeric', month: 'long', day: 'numeric'
+})
 ---
 
-<Layout title={article.title}>
-  <main style="max-width: 680px; margin: 0 auto; padding: 48px 32px 80px;">
-    <a href="/articles" style="font-size: 13px; color: var(--color-muted); text-decoration: none; display: inline-block; margin-bottom: 40px; transition: color 0.15s;" onmouseover="this.style.color='var(--color-ink)'" onmouseout="this.style.color='var(--color-muted)'">← Всі статті</a>
+<Layout
+  title={article.title}
+  description={article.description ?? undefined}
+>
+  <main class="article-main">
+    <!-- Back link -->
+    <div class="article-nav">
+      <a href="/articles" class="back-link">← Всі статті</a>
+    </div>
 
-    <h1 style="font-family: var(--font-serif); font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; color: var(--color-ink); margin: 0 0 16px;">
-      {article.title}
-    </h1>
+    <!-- Article header -->
+    <header class="article-header">
+      {article.category && (
+        <span class="chip" style="margin-bottom: 20px; display: inline-flex;">{article.category}</span>
+      )}
 
-    <time style="font-size: 13px; color: var(--color-muted); display: block; margin-bottom: 48px;">
-      {new Date(article.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' })}
-    </time>
+      <h1 class="article-title">{article.title}</h1>
 
-    <article class="prose prose-gray max-w-none" set:html={article.content} />
+      {article.description && (
+        <p class="article-description">{article.description}</p>
+      )}
+
+      <div class="article-meta">
+        <div class="author-badge">
+          <div class="author-avatar">АК</div>
+          <span class="author-name">{SITE.author}</span>
+        </div>
+        <span class="meta-divider">·</span>
+        <time class="meta-text">{date}</time>
+        {article.readTime && (
+          <>
+            <span class="meta-divider">·</span>
+            <span class="meta-text">{article.readTime} хв читання</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    <!-- Divider -->
+    <div class="article-divider"></div>
+
+    <!-- Article body -->
+    <article class="prose prose-gray max-w-none article-body" set:html={article.content} />
+
+    <!-- Footer -->
+    <div class="article-footer">
+      <a href="/articles" class="back-link">← Повернутися до статей</a>
+    </div>
   </main>
 </Layout>
+
+<style>
+  .article-main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  .article-nav {
+    margin-bottom: 48px;
+  }
+
+  .back-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .back-link:hover {
+    color: var(--color-ink);
+  }
+
+  .article-header {
+    margin-bottom: 40px;
+  }
+
+  .article-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.875rem, 5vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    margin: 0 0 20px;
+  }
+
+  .article-description {
+    font-size: 18px;
+    color: var(--color-secondary);
+    line-height: 1.65;
+    margin: 0 0 28px;
+    font-weight: 400;
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .author-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .author-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .meta-divider {
+    color: var(--color-border);
+    font-size: 14px;
+  }
+
+  .meta-text {
+    font-size: 13px;
+    color: var(--color-muted);
+  }
+
+  .article-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin-bottom: 48px;
+  }
+
+  .article-body {
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .article-footer {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 640px) {
+    .article-main {
+      padding: 32px 20px 72px;
+    }
+
+    .article-nav {
+      margin-bottom: 32px;
+    }
+
+    .article-title {
+      font-size: 1.75rem;
+    }
+
+    .article-description {
+      font-size: 16px;
+    }
+
+    .article-body {
+      font-size: 16px;
+    }
+  }
+</style>
