@@ -11,9 +11,9 @@ const currentPath = Astro.url.pathname
 ---
 
 <header class="border-b border-gray-200">
-  <nav class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+  <nav class="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <a href="/" class="font-bold text-lg">{SITE.name}</a>
-    <ul class="flex gap-6">
+    <ul class="flex gap-5">
       {navLinks.map(link => (
         <li>
           <a
