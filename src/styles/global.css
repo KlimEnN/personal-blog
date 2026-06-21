@@ -1,2 +1,106 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Lora:wght@500&display=swap');
+
+:root {
+  --color-bg: #FAFAF8;
+  --color-card: #FFFFFF;
+  --color-ink: #1A1A1C;
+  --color-accent: #6457F8;
+  --color-secondary: #6A6A6F;
+  --color-muted: #9A9A9F;
+  --color-border: rgba(8, 8, 8, 0.1);
+
+  --font-main: 'Manrope', system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+
+  --radius-card: 24px;
+  --radius-image: 16px;
+  --radius-button: 98px;
+
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 4px 24px rgba(0, 0, 0, 0.1);
+
+  --nav-height: 56px;
+  --container-max: 1040px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* Типографіка */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-main);
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+/* Prose overrides для статей */
+.prose {
+  font-family: var(--font-main);
+  color: var(--color-ink);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  opacity: 0.8;
+}
+
+/* Meta text */
+.meta {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Accent chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-radius: 99px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }

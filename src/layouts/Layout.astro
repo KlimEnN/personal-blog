@@ -21,6 +21,8 @@ const fullTitle = `${title} — ${SITE.name}`
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href={import.meta.env.DEV ? '/favicon-dev.svg' : '/favicon.svg'} />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <!-- Primary SEO -->
     <title>{fullTitle}</title>
@@ -42,7 +44,7 @@ const fullTitle = `${title} — ${SITE.name}`
     <!-- Sitemap -->
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
-  <body class="min-h-screen bg-white text-gray-900">
+  <body>
     <Header />
     <slot />
   </body>
