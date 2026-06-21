@@ -47,7 +47,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
     )}
 
     <div class="card-meta">
-      <time>{date}</time>
+      <time datetime={article.createdAt}>{date}</time>
       {article.readTime && (
         <>
           <span class="meta-dot">·</span>

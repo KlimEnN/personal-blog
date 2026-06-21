@@ -19,6 +19,15 @@ if (!token || !databaseId) {
   process.exit(1)
 }
 
+// Slug must be lowercase alphanumeric + hyphens, no path traversal
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function validateSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false
+  if (slug.length > 200) return false
+  return SLUG_REGEX.test(slug)
+}
+
 const notion = new Client({ auth: token })
 
 console.log('Fetching articles from Notion...')
@@ -38,17 +47,40 @@ do {
 } while (cursor)
 
 const articles = []
+const seenSlugs = new Set()
 
 for (const page of allPages) {
   const title = page.properties.Name?.title?.[0]?.plain_text ?? 'Без назви'
-  const slug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? page.id
+  const rawSlug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? ''
+
+  // Validate slug
+  if (!validateSlug(rawSlug)) {
+    console.warn(`  ⚠ Skipping "${title}" — invalid slug: "${rawSlug}"`)
+    continue
+  }
+
+  // Check for duplicates
+  if (seenSlugs.has(rawSlug)) {
+    console.warn(`  ⚠ Skipping "${title}" — duplicate slug: "${rawSlug}"`)
+    continue
+  }
+  seenSlugs.add(rawSlug)
+
+  const slug = rawSlug
   const createdAt = page.created_time
   const category = page.properties.Category?.select?.name ?? null
-  const description = page.properties.Description?.rich_text?.[0]?.plain_text ?? null
-  const readTime = page.properties.ReadTime?.number ?? null
+  const rawDescription = page.properties.Description?.rich_text?.[0]?.plain_text ?? null
+  const description = rawDescription ? rawDescription.slice(0, 160) : null
+  const rawReadTime = page.properties.ReadTime?.number ?? null
+  const readTime = typeof rawReadTime === 'number' && rawReadTime > 0 ? Math.round(rawReadTime) : null
   const featured = page.properties.Featured?.checkbox ?? false
 
   const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
+
+  if (md.truncated) {
+    console.warn(`  ⚠ "${title}" content is truncated by Notion API`)
+  }
+
   const rawHtml = marked(md.markdown ?? '')
   const content = sanitizeHtml(rawHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([

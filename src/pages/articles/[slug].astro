@@ -25,6 +25,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
   description={article.description ?? undefined}
   ogImage={article.image?.og}
   ogType="article"
+  publishedTime={article.createdAt}
 >
   <main class="article-main">
     <!-- Back link -->
@@ -50,7 +51,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
           <span class="author-name">{SITE.author}</span>
         </div>
         <span class="meta-divider">·</span>
-        <time class="meta-text">{date}</time>
+        <time class="meta-text" datetime={article.createdAt}>{date}</time>
         {article.readTime && (
           <>
             <span class="meta-divider">·</span>

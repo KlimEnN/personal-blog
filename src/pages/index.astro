@@ -8,7 +8,7 @@ const featured = getFeaturedArticle()
 const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).slice(0, 6)
 ---
 
-<Layout title="Головна" description={SITE.description}>
+<Layout title="Головна" description={SITE.description} ogImage="/og-default.webp">
 
   <!-- Hero -->
   <section style="max-width: var(--container-max); margin: 0 auto; padding: 80px 32px 64px;">
@@ -94,7 +94,7 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
             </div>
             <span style="font-size: 13px; color: var(--color-secondary);">Андрій Клименко</span>
             <span style="color: var(--color-border);">·</span>
-            <time style="font-size: 13px; color: var(--color-muted);">
+            <time style="font-size: 13px; color: var(--color-muted);" datetime={featured.createdAt}>
               {new Date(featured.createdAt).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
             </time>
           </div>

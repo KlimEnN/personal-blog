@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Сторінку не знайдено">
+  <main style="max-width: var(--container-max); margin: 0 auto; padding: 120px 32px 160px; text-align: center;">
+    <p style="font-size: 80px; font-weight: 800; letter-spacing: -0.04em; color: var(--color-border); margin: 0 0 8px; line-height: 1;">404</p>
+    <h1 style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; color: var(--color-ink); margin: 0 0 16px;">Сторінку не знайдено</h1>
+    <p style="font-size: 16px; color: var(--color-secondary); margin: 0 0 40px;">Можливо, вона була переміщена або видалена.</p>
+    <a
+      href="/"
+      style="display: inline-flex; align-items: center; padding: 12px 24px; background: var(--color-ink); color: #fff; border-radius: var(--radius-button); font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s;"
+      onmouseover="this.style.opacity='0.85'"
+      onmouseout="this.style.opacity='1'"
+    >
+      На головну
+    </a>
+  </main>
+</Layout>

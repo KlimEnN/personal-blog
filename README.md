@@ -1,147 +1,147 @@
-# Personal Blog — Андрій Клименко
+# blog.klymenko.space
 
-Персональний блог побудований на [Astro](https://astro.build/) з Notion як Headless CMS.
+Персональний блог Андрія Клименка. [blog.klymenko.space](https://blog.klymenko.space)
 
 ## Стек
 
-- **Astro 6** — фреймворк для статичних сайтів
-- **Tailwind CSS 4** — утиліти для стилізації
-- **TypeScript** — типізація
-- **Notion** — CMS для написання та керування статтями
-- **Cloudflare Pages** — хостинг та деплой
+- **[Astro 6](https://astro.build)** — статична генерація сайту
+- **[Tailwind CSS 4](https://tailwindcss.com)** + `@tailwindcss/typography`
+- **[Notion](https://notion.so)** — headless CMS (статті пишуться в Notion)
+- **[Cloudflare Pages](https://pages.cloudflare.com)** — хостинг + CDN
+- **[Met Museum API](https://metmuseum.github.io)** — artwork зображення для статей (public domain)
+- **sharp** — оптимізація зображень у WebP
 
 ## Дизайн-система
 
-Мінімалізм у стилі Apple. Всі токени визначені як CSS-змінні у `src/styles/global.css`.
+Всі токени визначені як CSS-змінні у `src/styles/global.css`.
 
-| Токен | Значення | Призначення |
-|-------|----------|-------------|
-| `--color-bg` | `#FAFAF8` | Фон сторінки |
-| `--color-card` | `#FFFFFF` | Фон карток |
-| `--color-ink` | `#1A1A1C` | Основний текст |
-| `--color-accent` | `#6457F8` | Акцентний колір |
-| `--color-secondary` | `#6A6A6F` | Вторинний текст |
-| `--color-muted` | `#9A9A9F` | Приглушений текст |
-| `--font-main` | Manrope | Інтерфейс та заголовки |
-| `--font-serif` | Lora | Заголовки статей |
-| `--radius-card` | `24px` | Радіус карток |
-| `--radius-button` | `98px` | Радіус кнопок (pill) |
-| `--container-max` | `1040px` | Максимальна ширина контейнера |
-| `--nav-height` | `56px` | Висота навігації |
+| Токен | Значення |
+|-------|----------|
+| `--color-bg` | `#FAFAF8` |
+| `--color-ink` | `#1A1A1C` |
+| `--color-accent` | `#6457F8` |
+| `--font-main` | Manrope |
+| `--font-serif` | Lora (заголовки статей) |
+| `--container-max` | `1040px` |
 
 ## Локальна розробка
 
+### 1. Клонувати і встановити залежності
+
 ```bash
+git clone https://github.com/KlimEnN/personal-blog.git
+cd personal-blog
 npm install
+```
+
+### 2. Налаштувати змінні середовища
+
+```bash
+cp .env.example .env
+# Заповнити NOTION_TOKEN і NOTION_DATABASE_ID
+```
+
+### 3. Запустити dev-сервер
+
+```bash
 npm run dev
 ```
 
-Сервер запускається на [http://localhost:4321](http://localhost:4321).
+При першому запуску автоматично підтягне статті з Notion.
 
-## Змінні середовища
+## Скрипти
 
-Створіть файл `.env` у корені проекту:
+| Команда | Опис |
+|---------|------|
+| `npm run dev` | Dev-сервер (авто-фетч Notion якщо немає `articles.json`) |
+| `npm run build` | Фетч Notion → type check → astro build |
+| `npm run check` | TypeScript перевірка через `astro check` |
+| `npm run preview` | Переглянути production білд локально |
 
-```
-NOTION_TOKEN=ваш_токен_інтеграції
-NOTION_DATABASE_ID=id_вашої_бази_даних
-```
+## Контент (Notion)
 
-Отримати токен можна на [notion.so/my-integrations](https://www.notion.so/my-integrations).
+Статті — у Notion базі даних. Поля:
 
-## Збірка
+| Поле | Тип | Опис |
+|------|-----|------|
+| `Name` | title | Заголовок статті |
+| `Slug` | rich_text | URL slug — лише `a-z`, `0-9`, `-` (обов'язково) |
+| `Status` | status | `Draft` / `Published` |
+| `Category` | select | Категорія |
+| `Description` | rich_text | Опис до 160 символів |
+| `ReadTime` | number | Час читання в хвилинах |
+| `Featured` | checkbox | Показати як рекомендоване на головній |
 
-```bash
-npm run build
-```
+Текст статті — у тілі Notion-сторінки.
 
-Команда виконує два кроки:
-1. `node scripts/fetch-notion.mjs` — завантажує статті з Notion і зберігає у `src/data/articles.json`
-2. `astro build` — генерує статичний сайт у папці `dist/`
+## Зображення
+
+Кожна стаття автоматично отримує зображення шедевра з [Met Museum API](https://metmuseum.github.io):
+
+- Вибір детермінований від slug — одна стаття = завжди одне зображення
+- Форматуються у WebP: `card.webp` (800×480) і `og.webp` (1200×630)
+- Зберігаються у `public/images/articles/{slug}/` і закомічені в git
+- Білд **не залежить** від зовнішнього API
+- Твори художників з Росії, СРСР, Російської Імперії — виключені
 
 ## Структура проекту
 
 ```
 scripts/
-└── fetch-notion.mjs      # Скрипт отримання статей з Notion API
+├── fetch-notion.mjs     # Фетч статей з Notion + запуск image-fetcher
+├── image-fetcher.mjs    # Завантаження і оптимізація artwork зображень
+├── ensure-data.mjs      # Авто-фетч articles.json якщо відсутній (для dev)
+└── generate-og.mjs      # Генерація дефолтного OG-зображення
 
 src/
 ├── components/
-│   ├── Header.astro      # Sticky навігація з бургер-меню на мобільному
-│   ├── Footer.astro      # Підвал з посиланнями
-│   └── ArticleCard.astro # Картка статті для сітки
-├── config/
-│   └── site.ts           # Глобальні налаштування (назва, URL, автор, теги hero)
-├── data/
-│   └── articles.json     # Статті з Notion (генерується при збірці, не комітити)
-├── layouts/
-│   └── Layout.astro      # Базовий layout з SEO мета-тегами
-├── lib/
-│   └── notion.ts         # Типи та функції читання статей
-├── pages/
-│   ├── index.astro       # Головна: Hero + Featured + сітка статей
-│   ├── about.astro       # Про мене
-│   ├── articles.astro    # Список статей у вигляді сітки
-│   └── articles/
-│       └── [slug].astro  # Сторінка окремої статті
-└── styles/
-    └── global.css        # Дизайн-система: CSS-змінні, шрифти, базові стилі
+│   ├── Header.astro     # Sticky навігація з бургер-меню
+│   ├── Footer.astro     # Підвал
+│   └── ArticleCard.astro
+├── config/site.ts       # Глобальні налаштування сайту
+├── data/articles.json   # Генерується при збірці (gitignored)
+├── layouts/Layout.astro # SEO, OG, Twitter Card, article:published_time
+├── lib/notion.ts        # Типи Article + функції читання
+└── pages/
+    ├── index.astro
+    ├── about.astro
+    ├── articles.astro
+    ├── 404.astro
+    └── articles/[slug].astro
 
 public/
-├── favicon.svg           # Фавіконка для продакшн
-├── favicon-dev.svg       # Фавіконка для локального середовища (помаранчева)
-└── robots.txt            # Дозволи для пошукових роботів
+├── _headers             # Security headers (Cloudflare Pages)
+├── images/articles/     # Artwork зображення (закомічені)
+├── og-default.webp      # Дефолтне OG-зображення для головної
+└── robots.txt
 ```
-
-## Поля статті в Notion
-
-| Поле | Тип | Призначення |
-|------|-----|-------------|
-| `Name` | Title | Назва статті |
-| `Slug` | Text | URL (наприклад: `my-first-post`) |
-| `Status` | Status | `Published` для публікації |
-| `Category` | Select | Рубрика (Продукти, Аналітика, AI тощо) |
-| `Description` | Text | Короткий опис для картки |
-| `ReadTime` | Number | Час читання у хвилинах |
-| `Featured` | Checkbox | Показувати як рекомендовану на головній |
-
-Текст статті пишеться у тілі сторінки Notion.
 
 ## SEO
 
-- Унікальні `title` та `description` для кожної сторінки
-- Open Graph теги для шерінгу в соцмережах
-- Canonical URL
-- Автоматично генерований `sitemap-index.xml`
-- `robots.txt`
+- `og:type="article"` для сторінок статей
+- `article:published_time` у мета-тегах
+- `datetime` атрибут на всіх `<time>` елементах
+- Унікальне OG-зображення для кожної статті (1200×630 WebP)
+- Дефолтне OG-зображення для головної сторінки
+- Canonical URL + sitemap
 
-Глобальні налаштування керуються через `src/config/site.ts`.
+## Security headers
 
-## Середовища
-
-| Середовище | Фавіконка |
-|------------|-----------|
-| Локальне (`npm run dev`) | Помаранчева з літерою "D" |
-| Продакшн | Стандартна |
-
-Фавіконка перемикається автоматично через `import.meta.env.DEV`.
+Cloudflare Pages застосовує заголовки з `public/_headers`:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy`
+- `Strict-Transport-Security` (HSTS)
 
 ## Деплой
 
-Деплой налаштовано через **Cloudflare Pages** + **Wrangler** з автоматичним тригером при push у гілку `main`.
+Push у `main` → Cloudflare Pages автоматично запускає:
 
-Налаштування збірки (`wrangler.toml`):
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Compatibility flag:** `nodejs_compat`
+```
+node scripts/fetch-notion.mjs → astro check → astro build
+```
 
-Змінні середовища в Cloudflare (Build → Variables and secrets):
+Змінні середовища в Cloudflare (Settings → Variables and secrets):
 - `NOTION_TOKEN`
 - `NOTION_DATABASE_ID`
-
-## Workflow
-
-1. Пишемо або оновлюємо статтю в Notion
-2. Перевіряємо локально: `npm run build && npm run preview`
-3. Після погодження — `git push origin main`
-4. Cloudflare автоматично збирає і публікує сайт
