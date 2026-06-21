@@ -4,8 +4,9 @@ import { fileURLToPath } from 'url'
 import { pipeline } from 'stream/promises'
 import { createRequire } from 'module'
 
-const require = createRequire(import.meta.url)
-const sharp = require('sharp')
+
+
+const sharp = createRequire(import.meta.url)('sharp')
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -124,7 +125,6 @@ export async function fetchArticleImage(slug) {
     }
   }
 
-  const artworkId = ARTWORK_IDS[slugToIndex(slug)]
   let artwork
 
   // Try current ID, fallback to next few if no image

@@ -23,15 +23,23 @@ const notion = new Client({ auth: token })
 
 console.log('Fetching articles from Notion...')
 
-const response = await notion.dataSources.query({
-  data_source_id: databaseId,
-  filter: { property: 'Status', status: { equals: 'Published' } },
-  sorts: [{ timestamp: 'created_time', direction: 'descending' }],
-})
+// Fetch all pages with pagination
+const allPages = []
+let cursor = undefined
+do {
+  const response = await notion.dataSources.query({
+    data_source_id: databaseId,
+    filter: { property: 'Status', status: { equals: 'Published' } },
+    sorts: [{ timestamp: 'created_time', direction: 'descending' }],
+    ...(cursor ? { start_cursor: cursor } : {}),
+  })
+  allPages.push(...response.results)
+  cursor = response.has_more ? response.next_cursor : undefined
+} while (cursor)
 
 const articles = []
 
-for (const page of response.results) {
+for (const page of allPages) {
   const title = page.properties.Name?.title?.[0]?.plain_text ?? 'Без назви'
   const slug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? page.id
   const createdAt = page.created_time
