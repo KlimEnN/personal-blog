@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { EnumChangefreq } from 'sitemap';
 
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
@@ -9,11 +10,13 @@ import sitemap from '@astrojs/sitemap';
 function getArticles() {
   try {
     const data = readFileSync(resolve('./src/data/articles.json'), 'utf-8');
-    return JSON.parse(data);
+    return /** @type {Array<{slug: string, createdAt: string}>} */ (JSON.parse(data));
   } catch {
     return [];
   }
 }
+
+const today = new Date().toISOString().split('T')[0];
 
 // https://astro.build/config
 export default defineConfig({
@@ -28,31 +31,27 @@ export default defineConfig({
         const articles = getArticles();
         const url = item.url;
 
-        // Homepage
         if (url === 'https://blog.klymenko.space/') {
-          return { ...item, changefreq: 'daily', priority: 1.0, lastmod: new Date().toISOString().split('T')[0] };
+          return { ...item, changefreq: EnumChangefreq.DAILY, priority: 1.0, lastmod: today };
         }
 
-        // Articles listing
         if (url === 'https://blog.klymenko.space/articles/') {
-          return { ...item, changefreq: 'daily', priority: 0.9, lastmod: new Date().toISOString().split('T')[0] };
+          return { ...item, changefreq: EnumChangefreq.DAILY, priority: 0.9, lastmod: today };
         }
 
-        // Individual article pages
         const slugMatch = url.match(/\/articles\/([^/]+)\//);
         if (slugMatch) {
           const slug = slugMatch[1];
           const article = articles.find((a) => a.slug === slug);
           return {
             ...item,
-            changefreq: 'monthly',
+            changefreq: EnumChangefreq.MONTHLY,
             priority: 0.8,
-            lastmod: article?.createdAt ? article.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+            lastmod: article?.createdAt ? article.createdAt.split('T')[0] : today,
           };
         }
 
-        // About and other static pages
-        return { ...item, changefreq: 'monthly', priority: 0.5, lastmod: new Date().toISOString().split('T')[0] };
+        return { ...item, changefreq: EnumChangefreq.MONTHLY, priority: 0.5, lastmod: today };
       },
     }),
   ],
