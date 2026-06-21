@@ -1,14 +1,141 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import ArticleCard from '../components/ArticleCard.astro'
+import { getPublishedArticles, getFeaturedArticle } from '../lib/notion'
+import { SITE } from '../config/site'
+
+const featured = getFeaturedArticle()
+const articles = getPublishedArticles().filter(a => !a.featured).slice(0, 6)
 ---
 
-<Layout title="Головна" description="Персональний блог Андрія Клименка про продукти, аналітику та технології.">
-  <main style="max-width: var(--container-max); margin: 0 auto; padding: 80px 32px 64px;">
-    <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: var(--color-ink); margin-bottom: 20px;">
-      Привіт, це мій блог
+<Layout title="Головна" description={SITE.description}>
+
+  <!-- Hero -->
+  <section style="max-width: var(--container-max); margin: 0 auto; padding: 80px 32px 64px;">
+    <div style="display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap;">
+      {SITE.tags.map(tag => (
+        <span class="chip">{tag}</span>
+      ))}
+    </div>
+
+    <h1 style="font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--color-ink); max-width: 720px; margin: 0 0 24px;">
+      {SITE.headline}
     </h1>
-    <p style="font-size: 18px; color: var(--color-secondary); max-width: 480px; line-height: 1.6;">
-      Ділюся досвідом про побудову цифрових сервісів, аналітику, AI та рішення, що створюють цінність.
+
+    <p style="font-size: clamp(16px, 2vw, 20px); color: var(--color-secondary); max-width: 480px; line-height: 1.6; margin: 0 0 40px;">
+      {SITE.description}
     </p>
-  </main>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <a
+        href="/articles"
+        style="display: inline-flex; align-items: center; padding: 12px 24px; background: var(--color-ink); color: #fff; border-radius: var(--radius-button); font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s;"
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='1'"
+      >
+        Читати статті
+      </a>
+      <a
+        href="/about"
+        style="display: inline-flex; align-items: center; padding: 12px 24px; color: var(--color-ink); font-size: 15px; font-weight: 500; text-decoration: none; transition: opacity 0.15s;"
+        onmouseover="this.style.opacity='0.6'"
+        onmouseout="this.style.opacity='1'"
+      >
+        Про мене →
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured article -->
+  {featured && (
+    <section style="max-width: var(--container-max); margin: 0 auto; padding: 0 32px 64px;">
+      <a
+        href={`/articles/${featured.slug}`}
+        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--color-card); border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden; text-decoration: none; transition: box-shadow 0.2s;"
+        onmouseover="this.style.boxShadow='var(--shadow-hover)'"
+        onmouseout="this.style.boxShadow='var(--shadow-card)'"
+      >
+        <!-- Placeholder обкладинки -->
+        <div style="background: linear-gradient(135deg, #e8e6ff 0%, #f0eeff 100%); min-height: 280px; display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 48px; opacity: 0.4;">✦</span>
+        </div>
+
+        <div style="padding: 40px;">
+          <div style="margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted);">
+              РЕКОМЕНДОВАНЕ{featured.readTime ? ` · ${featured.readTime} ХВ` : ''}
+            </span>
+          </div>
+
+          <h2 style="font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 500; color: var(--color-ink); line-height: 1.3; margin: 0 0 16px;">
+            {featured.title}
+          </h2>
+
+          {featured.description && (
+            <p style="font-size: 14px; color: var(--color-secondary); line-height: 1.6; margin: 0 0 24px;">
+              {featured.description}
+            </p>
+          )}
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--color-accent); display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 11px; font-weight: 700; color: #fff;">АК</span>
+            </div>
+            <span style="font-size: 13px; color: var(--color-secondary);">Андрій Клименко</span>
+            <span style="color: var(--color-border);">·</span>
+            <time style="font-size: 13px; color: var(--color-muted);">
+              {new Date(featured.createdAt).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
+            </time>
+          </div>
+        </div>
+      </a>
+
+      <style>
+        @media (max-width: 640px) {
+          .featured-card { grid-template-columns: 1fr !important; }
+        }
+      </style>
+    </section>
+  )}
+
+  <!-- Recent articles grid -->
+  {articles.length > 0 && (
+    <section style="max-width: var(--container-max); margin: 0 auto; padding: 0 32px 80px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px;">
+        <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted);">Останні статті</span>
+        <a href="/articles" style="font-size: 13px; color: var(--color-accent); text-decoration: none; font-weight: 500;">Всі статті →</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        {articles.map(article => (
+          <ArticleCard article={article} />
+        ))}
+      </div>
+    </section>
+  )}
 </Layout>
+
+<style>
+  @media (max-width: 900px) {
+    div[style*="grid-template-columns: repeat(3"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+  @media (max-width: 580px) {
+    div[style*="grid-template-columns: repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+    section > a[style*="grid-template-columns: 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+    section[style*="padding: 80px"] {
+      padding: 40px 20px 48px !important;
+    }
+    section[style*="padding: 0 32px 64px"] {
+      padding: 0 20px 48px !important;
+    }
+    section[style*="padding: 0 32px 80px"] {
+      padding: 0 20px 64px !important;
+    }
+  }
+</style>

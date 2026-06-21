@@ -5,11 +5,20 @@ export type Article = {
   title: string
   slug: string
   createdAt: string
+  category: string | null
+  description: string | null
+  readTime: number | null
+  featured: boolean
   content: string
 }
 
 export function getPublishedArticles(): Article[] {
   return articles as Article[]
+}
+
+export function getFeaturedArticle(): Article | null {
+  const all = articles as Article[]
+  return all.find(a => a.featured) ?? all[0] ?? null
 }
 
 export function getArticleBySlug(slug: string): Article | null {

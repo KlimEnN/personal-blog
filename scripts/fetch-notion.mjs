@@ -33,12 +33,16 @@ for (const page of response.results) {
   const title = page.properties.Name?.title?.[0]?.plain_text ?? 'Без назви'
   const slug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? page.id
   const createdAt = page.created_time
+  const category = page.properties.Category?.select?.name ?? null
+  const description = page.properties.Description?.rich_text?.[0]?.plain_text ?? null
+  const readTime = page.properties.ReadTime?.number ?? null
+  const featured = page.properties.Featured?.checkbox ?? false
 
   const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
   const content = marked(md.markdown ?? '')
 
-  articles.push({ id: page.id, title, slug, createdAt, content })
-  console.log(`  ✓ ${title}`)
+  articles.push({ id: page.id, title, slug, createdAt, category, description, readTime, featured, content })
+  console.log(`  ✓ ${title}${featured ? ' ⭐' : ''}`)
 }
 
 const outDir = join(__dirname, '../src/data')
