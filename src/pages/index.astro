@@ -29,7 +29,7 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
     <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
       <a
         href="/articles"
-        style="display: inline-flex; align-items: center; padding: 12px 24px; background: var(--color-ink); color: #fff; border-radius: var(--radius-button); font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s;"
+        style="display: inline-flex; align-items: center; padding: 12px 24px; background: var(--color-ink); color: var(--color-on-ink); border-radius: var(--radius-button); font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s;"
         onmouseover="this.style.opacity='0.85'"
         onmouseout="this.style.opacity='1'"
       >
@@ -128,7 +128,7 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
 
 <style>
   .featured-image {
-    background: linear-gradient(135deg, #e8e6ff 0%, #f0eeff 100%);
+    background: linear-gradient(135deg, var(--color-featured-gradient-from) 0%, var(--color-featured-gradient-to) 100%);
     min-height: 280px;
     display: flex;
     align-items: center;
