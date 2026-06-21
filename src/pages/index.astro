@@ -5,7 +5,7 @@ import { getPublishedArticles, getFeaturedArticle } from '../lib/notion'
 import { SITE } from '../config/site'
 
 const featured = getFeaturedArticle()
-const articles = getPublishedArticles().filter(a => !a.featured).slice(0, 6)
+const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).slice(0, 6)
 ---
 
 <Layout title="Головна" description={SITE.description}>
