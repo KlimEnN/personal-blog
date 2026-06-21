@@ -1,12 +1,17 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
 
-const notion = new Client({ auth: import.meta.env.NOTION_TOKEN })
-const n2m = new NotionToMarkdown({ notionClient: notion })
+function createClient() {
+  const token = import.meta.env.NOTION_TOKEN ?? process.env.NOTION_TOKEN
+  return new Client({ auth: token })
+}
 
-const DATABASE_ID = import.meta.env.NOTION_DATABASE_ID
+const DATABASE_ID =
+  import.meta.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID ?? ''
 
 export async function getPublishedArticles() {
+  const notion = createClient()
+
   const response = await notion.databases.query({
     database_id: DATABASE_ID,
     filter: {
@@ -29,6 +34,8 @@ export async function getArticleBySlug(slug: string) {
   const article = articles.find(a => a.slug === slug)
   if (!article) return null
 
+  const notion = createClient()
+  const n2m = new NotionToMarkdown({ notionClient: notion })
   const mdBlocks = await n2m.pageToMarkdown(article.id)
   const content = n2m.toMarkdownString(mdBlocks).parent
 
