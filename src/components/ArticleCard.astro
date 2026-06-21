@@ -14,33 +14,144 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
 
 <a
   href={`/articles/${article.slug}`}
-  style="display: block; background: var(--color-card); border-radius: var(--radius-card); padding: 28px; box-shadow: var(--shadow-card); text-decoration: none; transition: box-shadow 0.2s, transform 0.2s;"
-  onmouseover="this.style.boxShadow='var(--shadow-hover)'; this.style.transform='translateY(-2px)'"
-  onmouseout="this.style.boxShadow='var(--shadow-card)'; this.style.transform='translateY(0)'"
+  class="article-card"
 >
-  {article.category && (
-    <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent);">
-      {article.category}
-    </span>
-  )}
-
-  <h3 style={`font-size: 17px; font-weight: 700; color: var(--color-ink); line-height: 1.3; margin: ${article.category ? '8px' : '0'} 0 10px;`}>
-    {article.title}
-  </h3>
-
-  {article.description && (
-    <p style="font-size: 14px; color: var(--color-secondary); line-height: 1.5; margin: 0 0 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-      {article.description}
-    </p>
-  )}
-
-  <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
-    <time style="font-size: 12px; color: var(--color-muted);">{date}</time>
-    {article.readTime && (
-      <>
-        <span style="color: var(--color-border); font-size: 12px;">·</span>
-        <span style="font-size: 12px; color: var(--color-muted);">{article.readTime} хв</span>
-      </>
+  <!-- Image -->
+  <div class="card-image">
+    {article.image ? (
+      <img
+        src={article.image.card}
+        alt={article.image.alt ?? article.title}
+        width="800"
+        height="480"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="card-image-placeholder">
+        <span>✦</span>
+      </div>
     )}
   </div>
+
+  <!-- Content -->
+  <div class="card-body">
+    {article.category && (
+      <span class="card-category">{article.category}</span>
+    )}
+
+    <h3 class="card-title">{article.title}</h3>
+
+    {article.description && (
+      <p class="card-description">{article.description}</p>
+    )}
+
+    <div class="card-meta">
+      <time>{date}</time>
+      {article.readTime && (
+        <>
+          <span class="meta-dot">·</span>
+          <span>{article.readTime} хв</span>
+        </>
+      )}
+    </div>
+  </div>
 </a>
+
+<style>
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .article-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .card-image {
+    width: 100%;
+    aspect-ratio: 5 / 3;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e8e6ff 0%, #f0eeff 100%);
+    flex-shrink: 0;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .article-card:hover .card-image img {
+    transform: scale(1.03);
+  }
+
+  .card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    opacity: 0.3;
+  }
+
+  .card-body {
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-category {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.35;
+    margin: 0 0 8px;
+  }
+
+  .card-description {
+    font-size: 13px;
+    color: var(--color-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-muted);
+    margin-top: auto;
+  }
+
+  .meta-dot {
+    color: var(--color-border);
+  }
+</style>

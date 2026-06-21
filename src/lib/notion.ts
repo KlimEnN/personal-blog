@@ -1,5 +1,12 @@
 import articles from '../data/articles.json'
 
+export type ArticleImage = {
+  card: string
+  og: string
+  alt?: string
+  credit?: string
+}
+
 export type Article = {
   id: string
   title: string
@@ -10,6 +17,7 @@ export type Article = {
   readTime: number | null
   featured: boolean
   content: string
+  image: ArticleImage | null
 }
 
 export function getPublishedArticles(): Article[] {

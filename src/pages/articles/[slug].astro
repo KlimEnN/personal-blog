@@ -23,6 +23,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
 <Layout
   title={article.title}
   description={article.description ?? undefined}
+  ogImage={article.image?.og}
 >
   <main class="article-main">
     <!-- Back link -->
@@ -57,6 +58,23 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
         )}
       </div>
     </header>
+
+    <!-- Hero image -->
+    {article.image && (
+      <div class="article-image">
+        <img
+          src={article.image.card}
+          alt={article.image.alt ?? article.title}
+          width="800"
+          height="480"
+          loading="eager"
+          decoding="async"
+        />
+        {article.image.credit && (
+          <p class="image-credit">{article.image.credit}</p>
+        )}
+      </div>
+    )}
 
     <!-- Divider -->
     <div class="article-divider"></div>
@@ -171,6 +189,26 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
   .article-body {
     font-size: 17px;
     line-height: 1.8;
+  }
+
+  .article-image {
+    margin-bottom: 40px;
+    border-radius: var(--radius-image);
+    overflow: hidden;
+  }
+
+  .article-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .image-credit {
+    font-size: 11px;
+    color: var(--color-muted);
+    text-align: right;
+    margin: 6px 0 0;
+    font-style: italic;
   }
 
   .article-footer {

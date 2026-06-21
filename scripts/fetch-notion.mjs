@@ -3,6 +3,7 @@ import { writeFileSync, mkdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { marked } from 'marked'
+import { fetchArticleImage } from './image-fetcher.mjs'
 
 const require = createRequire(import.meta.url)
 const { Client } = require('@notionhq/client')
@@ -41,8 +42,17 @@ for (const page of response.results) {
   const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
   const content = marked(md.markdown ?? '')
 
-  articles.push({ id: page.id, title, slug, createdAt, category, description, readTime, featured, content })
-  console.log(`  ✓ ${title}${featured ? ' ⭐' : ''}`)
+  // Fetch artwork image
+  let image = null
+  try {
+    image = await fetchArticleImage(slug)
+    console.log(`  ✓ ${title}${featured ? ' ⭐' : ''} 🖼`)
+  } catch (err) {
+    console.warn(`  ⚠ ${title} — image failed: ${err.message}`)
+    console.log(`  ✓ ${title}${featured ? ' ⭐' : ''}`)
+  }
+
+  articles.push({ id: page.id, title, slug, createdAt, category, description, readTime, featured, content, image })
 }
 
 const outDir = join(__dirname, '../src/data')
