@@ -1,4 +1,4 @@
-# Personal Blog
+# Personal Blog — Андрій Клименко
 
 Персональний блог побудований на [Astro](https://astro.build/) з Notion як Headless CMS.
 
@@ -9,6 +9,21 @@
 - **TypeScript** — типізація
 - **Notion** — CMS для написання та керування статтями
 - **Cloudflare Pages** — хостинг та деплой
+
+## Дизайн-система
+
+Мінімалізм у стилі Apple. Всі токени визначені як CSS-змінні у `src/styles/global.css`.
+
+| Токен | Значення | Призначення |
+|-------|----------|-------------|
+| `--color-bg` | `#FAFAF8` | Фон сторінки |
+| `--color-card` | `#FFFFFF` | Фон карток |
+| `--color-ink` | `#1A1A1C` | Основний текст |
+| `--color-accent` | `#6457F8` | Акцентний колір |
+| `--color-secondary` | `#6A6A6F` | Вторинний текст |
+| `--color-muted` | `#9A9A9F` | Приглушений текст |
+| `--font-main` | Manrope | Інтерфейс та заголовки |
+| `--font-serif` | Lora | Заголовки статей |
 
 ## Локальна розробка
 
@@ -48,26 +63,27 @@ scripts/
 
 src/
 ├── components/
-│   └── Header.astro      # Навігація сайту
+│   ├── Header.astro      # Sticky навігація з бургер-меню на мобільному
+│   └── Footer.astro      # Підвал з посиланнями
 ├── config/
-│   └── site.ts           # Глобальні налаштування сайту (назва, URL, автор)
+│   └── site.ts           # Глобальні налаштування (назва, URL, автор)
 ├── data/
-│   └── articles.json     # Статті згенеровані з Notion (не комітити)
+│   └── articles.json     # Статті з Notion (генерується при збірці, не комітити)
 ├── layouts/
 │   └── Layout.astro      # Базовий layout з SEO мета-тегами
 ├── lib/
-│   └── notion.ts         # Функції для читання статей з articles.json
+│   └── notion.ts         # Функції читання статей з articles.json
 ├── pages/
 │   ├── index.astro       # Головна сторінка
-│   ├── about.astro       # Сторінка "Про мене"
+│   ├── about.astro       # Про мене
 │   ├── articles.astro    # Список статей
 │   └── articles/
 │       └── [slug].astro  # Сторінка окремої статті
 └── styles/
-    └── global.css        # Глобальні стилі з Tailwind
+    └── global.css        # Дизайн-система: CSS-змінні, шрифти, базові стилі
 
 public/
-├── favicon.svg           # Фавіконка для продакшн середовища
+├── favicon.svg           # Фавіконка для продакшн
 ├── favicon-dev.svg       # Фавіконка для локального середовища (помаранчева)
 └── robots.txt            # Дозволи для пошукових роботів
 ```
@@ -80,7 +96,7 @@ public/
 - Автоматично генерований `sitemap-index.xml`
 - `robots.txt`
 
-Глобальні налаштування SEO керуються через `src/config/site.ts`.
+Глобальні налаштування керуються через `src/config/site.ts`.
 
 ## Середовища
 
