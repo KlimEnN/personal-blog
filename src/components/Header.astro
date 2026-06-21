@@ -1,4 +1,6 @@
 ---
+import { SITE } from '../config/site'
+
 const navLinks = [
   { href: '/', label: 'Головна' },
   { href: '/about', label: 'Про мене' },
@@ -10,7 +12,7 @@ const currentPath = Astro.url.pathname
 
 <header class="border-b border-gray-200">
   <nav class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-    <a href="/" class="font-bold text-lg">Блог Клименка Андрія</a>
+    <a href="/" class="font-bold text-lg">{SITE.name}</a>
     <ul class="flex gap-6">
       {navLinks.map(link => (
         <li>
