@@ -68,9 +68,29 @@ async function downloadImage(url, destPath) {
   await pipeline(res.body, createWriteStream(destPath))
 }
 
+const BLOCKED_NATIONALITIES = [
+  'Russian', 'Soviet', 'USSR', 'U.S.S.R.', 'Imperial Russian',
+]
+
+const BLOCKED_CULTURES = [
+  'Russian', 'Soviet', 'USSR',
+]
+
+function isBlocked(data) {
+  const nationality = data.artistNationality ?? ''
+  const culture = data.culture ?? ''
+  const country = data.country ?? ''
+
+  const check = (val) => BLOCKED_NATIONALITIES.some(k => val.includes(k))
+  const checkCulture = (val) => BLOCKED_CULTURES.some(k => val.includes(k))
+
+  return check(nationality) || checkCulture(culture) || check(country)
+}
+
 async function getArtwork(id) {
   const data = await fetchJson(`${MET_API}/objects/${id}`)
   if (!data.primaryImage) throw new Error(`No image for artwork ${id}`)
+  if (isBlocked(data)) throw new Error(`Blocked artwork ${id}: ${data.artistNationality || data.culture}`)
   return {
     imageUrl: data.primaryImage,
     alt: [data.title, data.artistDisplayName, data.objectDate]
