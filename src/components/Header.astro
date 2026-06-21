@@ -8,6 +8,11 @@ const navLinks = [
 ]
 
 const currentPath = Astro.url.pathname
+
+function isActive(href: string) {
+  if (href === '/') return currentPath === '/'
+  return currentPath === href || currentPath.startsWith(href + '/')
+}
 ---
 
 <header style="height: var(--nav-height); border-bottom: 1px solid var(--color-border); background: var(--color-bg); position: sticky; top: 0; z-index: 50; backdrop-filter: blur(8px);">
@@ -23,7 +28,7 @@ const currentPath = Astro.url.pathname
         <li>
           <a
             href={link.href}
-            style={`font-family: var(--font-main); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.15s; color: ${currentPath === link.href ? 'var(--color-accent)' : 'var(--color-secondary)'};`}
+            style={`font-family: var(--font-main); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.15s; color: ${isActive(link.href) ? 'var(--color-accent)' : 'var(--color-secondary)'};`}
           >
             {link.label}
           </a>
@@ -35,6 +40,8 @@ const currentPath = Astro.url.pathname
     <button
       id="burger"
       aria-label="Меню"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
       class="burger-btn"
       style="display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px;"
     >
@@ -54,7 +61,7 @@ const currentPath = Astro.url.pathname
         <li>
           <a
             href={link.href}
-            style={`display: block; padding: 12px 0; font-size: 16px; font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--color-border); color: ${currentPath === link.href ? 'var(--color-accent)' : 'var(--color-ink)'};`}
+            style={`display: block; padding: 12px 0; font-size: 16px; font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--color-border); color: ${isActive(link.href) ? 'var(--color-accent)' : 'var(--color-ink)'};`}
           >
             {link.label}
           </a>
@@ -72,10 +79,20 @@ const currentPath = Astro.url.pathname
 </style>
 
 <script>
-  const burger = document.getElementById('burger')
+  const burger = document.getElementById('burger') as HTMLButtonElement | null
   const menu = document.getElementById('mobile-menu')
+
   burger?.addEventListener('click', () => {
     const open = menu?.style.display === 'block'
     if (menu) menu.style.display = open ? 'none' : 'block'
+    burger.setAttribute('aria-expanded', String(!open))
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.style.display === 'block') {
+      menu.style.display = 'none'
+      burger?.setAttribute('aria-expanded', 'false')
+      burger?.focus()
+    }
   })
 </script>

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { marked } from 'marked'
 import { fetchArticleImage } from './image-fetcher.mjs'
+import sanitizeHtml from 'sanitize-html'
 
 const require = createRequire(import.meta.url)
 const { Client } = require('@notionhq/client')
@@ -40,7 +41,18 @@ for (const page of response.results) {
   const featured = page.properties.Featured?.checkbox ?? false
 
   const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
-  const content = marked(md.markdown ?? '')
+  const rawHtml = marked(md.markdown ?? '')
+  const content = sanitizeHtml(rawHtml, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      'h1', 'h2', 'h3', 'h4', 'img', 'figure', 'figcaption',
+    ]),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      img: ['src', 'alt', 'width', 'height', 'loading'],
+      code: ['class'],
+      pre: ['class'],
+    },
+  })
 
   // Fetch artwork image
   let image = null

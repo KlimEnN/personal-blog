@@ -24,6 +24,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
   title={article.title}
   description={article.description ?? undefined}
   ogImage={article.image?.og}
+  ogType="article"
 >
   <main class="article-main">
     <!-- Back link -->
@@ -92,8 +93,11 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
 <style>
   .article-main {
     max-width: 720px;
+    width: 100%;
+    min-width: 0;
     margin: 0 auto;
     padding: 48px 32px 96px;
+    overflow-x: hidden;
   }
 
   .article-nav {

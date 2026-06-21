@@ -1,4 +1,4 @@
-import { createWriteStream, mkdirSync, existsSync } from 'fs'
+import { createWriteStream, mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { pipeline } from 'stream/promises'
@@ -111,12 +111,16 @@ export async function fetchArticleImage(slug) {
   const dir = join(IMAGES_DIR, slug)
   const cardPath = join(dir, 'card.webp')
   const ogPath = join(dir, 'og.webp')
+  const metaPath = join(dir, 'meta.json')
 
-  // Skip if already processed
-  if (existsSync(cardPath) && existsSync(ogPath)) {
+  // Skip if already processed — return full metadata from cache
+  if (existsSync(cardPath) && existsSync(ogPath) && existsSync(metaPath)) {
+    const meta = JSON.parse(readFileSync(metaPath, 'utf-8'))
     return {
       card: `/images/articles/${slug}/card.webp`,
       og: `/images/articles/${slug}/og.webp`,
+      alt: meta.alt,
+      credit: meta.credit,
     }
   }
 
@@ -146,6 +150,9 @@ export async function fetchArticleImage(slug) {
   // Remove temp file
   const { unlinkSync } = await import('fs')
   try { unlinkSync(tmpPath) } catch {}
+
+  // Save metadata so repeated builds don't lose alt/credit
+  writeFileSync(metaPath, JSON.stringify({ alt: artwork.alt, credit: artwork.credit }, null, 2))
 
   return {
     card: `/images/articles/${slug}/card.webp`,
