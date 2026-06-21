@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import { getPublishedArticles } from '../lib/notion'
 
-const articles = await getPublishedArticles()
+const articles = getPublishedArticles()
 ---
 
 <Layout title="Статті" description="Всі статті Клименка Андрія про технології, розробку та інші теми.">

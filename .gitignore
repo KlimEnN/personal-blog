@@ -29,5 +29,8 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/launch.json
 
+# generated data (fetched at build time)
+src/data/articles.json
+
 # claude
 .claude/launch.json

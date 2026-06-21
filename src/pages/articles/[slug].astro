@@ -2,15 +2,15 @@
 import Layout from '../../layouts/Layout.astro'
 import { getPublishedArticles, getArticleBySlug } from '../../lib/notion'
 
-export async function getStaticPaths() {
-  const articles = await getPublishedArticles()
+export function getStaticPaths() {
+  const articles = getPublishedArticles()
   return articles.map(article => ({
     params: { slug: article.slug },
   }))
 }
 
 const { slug } = Astro.params
-const article = await getArticleBySlug(slug)
+const article = getArticleBySlug(slug)
 
 if (!article) return Astro.redirect('/articles')
 ---
