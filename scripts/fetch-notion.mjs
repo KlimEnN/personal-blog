@@ -1,8 +1,10 @@
-import { Client } from '@notionhq/client'
-import { NotionToMarkdown } from 'notion-to-md'
+import { createRequire } from 'module'
 import { writeFileSync, mkdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+
+const require = createRequire(import.meta.url)
+const { Client } = require('@notionhq/client')
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -15,13 +17,12 @@ if (!token || !databaseId) {
 }
 
 const notion = new Client({ auth: token })
-const n2m = new NotionToMarkdown({ notionClient: notion })
 
 console.log('Fetching articles from Notion...')
 
-const response = await notion.databases.query({
-  database_id: databaseId,
-  filter: { property: 'Status', select: { equals: 'Published' } },
+const response = await notion.dataSources.query({
+  data_source_id: databaseId,
+  filter: { property: 'Status', status: { equals: 'Published' } },
   sorts: [{ timestamp: 'created_time', direction: 'descending' }],
 })
 
@@ -32,8 +33,8 @@ for (const page of response.results) {
   const slug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? page.id
   const createdAt = page.created_time
 
-  const mdBlocks = await n2m.pageToMarkdown(page.id)
-  const content = n2m.toMarkdownString(mdBlocks).parent
+  const md = await notion.pages.retrieveMarkdown({ page_id: page.id })
+  const content = md.markdown ?? ''
 
   articles.push({ id: page.id, title, slug, createdAt, content })
   console.log(`  ✓ ${title}`)
