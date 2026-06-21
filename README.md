@@ -1,43 +1,67 @@
-# Astro Starter Kit: Minimal
+# Personal Blog
 
-```sh
-npm create astro@latest -- --template minimal
+Персональний блог побудований на [Astro](https://astro.build/).
+
+## Стек
+
+- **Astro 6** — фреймворк для статичних сайтів
+- **Tailwind CSS 4** — утиліти для стилізації
+- **TypeScript** — типізація
+- **Cloudflare Pages** — хостинг та деплой
+
+## Локальна розробка
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Сервер запускається на [http://localhost:4321](http://localhost:4321).
 
-## 🚀 Project Structure
+## Збірка
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run build
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Результат збірки знаходиться в папці `dist/`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Структура проекту
 
-Any static assets, like images, can be placed in the `public/` directory.
+```
+src/
+├── layouts/
+│   └── Layout.astro      # Базовий layout для всіх сторінок
+├── pages/
+│   └── index.astro       # Головна сторінка
+└── styles/
+    └── global.css        # Глобальні стилі з підключенням Tailwind
 
-## 🧞 Commands
+public/
+├── favicon.svg           # Фавіконка для продакшн середовища
+└── favicon-dev.svg       # Фавіконка для локального середовища (помаранчева)
+```
 
-All commands are run from the root of the project, from a terminal:
+## Середовища
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| Середовище | Фавіконка |
+|------------|-----------|
+| Локальне (`npm run dev`) | Помаранчева з літерою "D" |
+| Продакшн | Стандартна |
 
-## 👀 Want to learn more?
+Фавіконка перемикається автоматично через `import.meta.env.DEV`.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Деплой
+
+Деплой налаштовано через **Cloudflare Pages** з автоматичним тригером при push у гілку `main`.
+
+Налаштування збірки в Cloudflare Pages:
+- **Framework preset:** Astro
+- **Build command:** `npm run build`
+- **Build output directory:** `dist`
+
+## Workflow
+
+1. Вносимо зміни локально та перевіряємо на dev сервері
+2. Після погодження — `git push origin main`
+3. Cloudflare Pages автоматично збирає і публікує зміни
