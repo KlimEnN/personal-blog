@@ -55,9 +55,20 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
         onmouseover="this.style.boxShadow='var(--shadow-hover)'"
         onmouseout="this.style.boxShadow='var(--shadow-card)'"
       >
-        <!-- Placeholder обкладинки -->
-        <div style="background: linear-gradient(135deg, #e8e6ff 0%, #f0eeff 100%); min-height: 280px; display: flex; align-items: center; justify-content: center;">
-          <span style="font-size: 48px; opacity: 0.4;">✦</span>
+        <!-- Обкладинка -->
+        <div class="featured-image">
+          {featured.image ? (
+            <img
+              src={featured.image.card}
+              alt={featured.image.alt ?? featured.title}
+              width="800"
+              height="480"
+              loading="eager"
+              decoding="async"
+            />
+          ) : (
+            <span style="font-size: 48px; opacity: 0.4;">✦</span>
+          )}
         </div>
 
         <div style="padding: 40px;">
@@ -116,6 +127,27 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
 </Layout>
 
 <style>
+  .featured-image {
+    background: linear-gradient(135deg, #e8e6ff 0%, #f0eeff 100%);
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  a:hover .featured-image img {
+    transform: scale(1.03);
+  }
+
   @media (max-width: 900px) {
     div[style*="grid-template-columns: repeat(3"] {
       grid-template-columns: repeat(2, 1fr) !important;
