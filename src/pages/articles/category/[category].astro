@@ -2,15 +2,15 @@
 import Layout from '../../../layouts/Layout.astro'
 import ArticleCard from '../../../components/ArticleCard.astro'
 import { getPublishedArticles } from '../../../lib/notion'
-import { slugifyCategory, getCategories, getCategoryDescription } from '../../../lib/categories'
+import { getCategories, getCategorySlug, getCategoryDescription } from '../../../lib/categories'
 
 export function getStaticPaths() {
   const articles = getPublishedArticles()
   const categories = getCategories(articles)
 
-  return categories.map(category => ({
-    params: { category: slugifyCategory(category) },
-    props: { categoryLabel: category },
+  return categories.map(({ slug, label }) => ({
+    params: { category: slug },
+    props: { categoryLabel: label },
   }))
 }
 
@@ -18,7 +18,7 @@ const { category } = Astro.params
 const { categoryLabel } = Astro.props
 
 const allArticles = getPublishedArticles()
-const articles = allArticles.filter(a => a.category === categoryLabel)
+const articles = allArticles.filter(a => getCategorySlug(a) === category)
 const allCategories = getCategories(allArticles)
 
 const description = getCategoryDescription(category)
@@ -26,10 +26,7 @@ const pageTitle = `${categoryLabel} — Статті`
 const ogDescription = `${description} Блог Андрія Клименка.`
 ---
 
-<Layout
-  title={pageTitle}
-  description={ogDescription}
->
+<Layout title={pageTitle} description={ogDescription}>
   <main class="articles-main">
     <div class="articles-header">
       <h1 class="articles-title">Статті</h1>
@@ -39,12 +36,12 @@ const ogDescription = `${description} Блог Андрія Клименка.`
     <!-- Фільтри -->
     <div class="filters">
       <a href="/articles/" class="filter-chip">Всі</a>
-      {allCategories.map(cat => (
+      {allCategories.map(({ slug, label }) => (
         <a
-          href={`/articles/category/${slugifyCategory(cat)}/`}
-          class={`filter-chip ${cat === categoryLabel ? 'active' : ''}`}
+          href={`/articles/category/${slug}/`}
+          class={`filter-chip ${slug === category ? 'active' : ''}`}
         >
-          {cat}
+          {label}
         </a>
       ))}
     </div>

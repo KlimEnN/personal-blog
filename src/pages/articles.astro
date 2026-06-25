@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import ArticleCard from '../components/ArticleCard.astro'
 import { getPublishedArticles } from '../lib/notion'
-import { getCategories, slugifyCategory } from '../lib/categories'
+import { getCategories } from '../lib/categories'
 
 const articles = getPublishedArticles()
 const categories = getCategories(articles)
@@ -18,9 +18,9 @@ const categories = getCategories(articles)
     <!-- Фільтри -->
     <div class="filters">
       <a href="/articles/" class="filter-chip active">Всі</a>
-      {categories.map(cat => (
-        <a href={`/articles/category/${slugifyCategory(cat)}/`} class="filter-chip">
-          {cat}
+      {categories.map(({ slug, label }) => (
+        <a href={`/articles/category/${slug}/`} class="filter-chip">
+          {label}
         </a>
       ))}
     </div>

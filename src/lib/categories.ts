@@ -16,8 +16,21 @@ export function slugifyCategory(category: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-export function getCategories(articles: Array<{ category: string | null }>): string[] {
-  return [...new Set(articles.map(a => a.category).filter(Boolean))] as string[]
+export type CategoryEntry = { slug: string; label: string }
+
+export function getCategorySlug(article: { category: string | null; categorySlug: string | null }): string | null {
+  if (!article.category) return null
+  return article.categorySlug ?? slugifyCategory(article.category)
+}
+
+export function getCategories(articles: Array<{ category: string | null; categorySlug: string | null }>): CategoryEntry[] {
+  const map = new Map<string, string>()
+  for (const a of articles) {
+    if (!a.category) continue
+    const slug = getCategorySlug(a)!
+    if (!map.has(slug)) map.set(slug, a.category)
+  }
+  return [...map.entries()].map(([slug, label]) => ({ slug, label }))
 }
 
 export const CATEGORY_DESCRIPTIONS: Record<string, string> = {

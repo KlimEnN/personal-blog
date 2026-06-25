@@ -13,6 +13,7 @@ export type Article = {
   slug: string
   createdAt: string
   category: string | null
+  categorySlug: string | null
   description: string | null
   readTime: number | null
   featured: boolean

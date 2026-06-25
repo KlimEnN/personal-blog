@@ -69,6 +69,8 @@ for (const page of allPages) {
   const slug = rawSlug
   const createdAt = page.created_time
   const category = page.properties.Category?.select?.name ?? null
+  const rawCategorySlug = page.properties.CategorySlug?.rich_text?.[0]?.plain_text?.trim() ?? null
+  const categorySlug = rawCategorySlug && validateSlug(rawCategorySlug) ? rawCategorySlug : null
   const rawDescription = page.properties.Description?.rich_text?.[0]?.plain_text ?? null
   const description = rawDescription ? rawDescription.slice(0, 160) : null
   const rawReadTime = page.properties.ReadTime?.number ?? null
@@ -104,7 +106,7 @@ for (const page of allPages) {
     console.log(`  ✓ ${title}${featured ? ' ⭐' : ''}`)
   }
 
-  articles.push({ id: page.id, title, slug, createdAt, category, description, readTime, featured, content, image })
+  articles.push({ id: page.id, title, slug, createdAt, category, categorySlug, description, readTime, featured, content, image })
 }
 
 const outDir = join(__dirname, '../src/data')
