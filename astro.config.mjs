@@ -39,6 +39,10 @@ export default defineConfig({
           return { ...item, changefreq: EnumChangefreq.DAILY, priority: 0.9, lastmod: today };
         }
 
+        if (url.includes('/articles/category/')) {
+          return { ...item, changefreq: EnumChangefreq.WEEKLY, priority: 0.7, lastmod: today };
+        }
+
         const slugMatch = url.match(/\/articles\/([^/]+)\//);
         if (slugMatch) {
           const slug = slugMatch[1];

@@ -1,14 +1,35 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import ArticleCard from '../components/ArticleCard.astro'
-import { getPublishedArticles } from '../lib/notion'
-import { getCategories, slugifyCategory } from '../lib/categories'
+import Layout from '../../../layouts/Layout.astro'
+import ArticleCard from '../../../components/ArticleCard.astro'
+import { getPublishedArticles } from '../../../lib/notion'
+import { slugifyCategory, getCategories, getCategoryDescription } from '../../../lib/categories'
 
-const articles = getPublishedArticles()
-const categories = getCategories(articles)
+export function getStaticPaths() {
+  const articles = getPublishedArticles()
+  const categories = getCategories(articles)
+
+  return categories.map(category => ({
+    params: { category: slugifyCategory(category) },
+    props: { categoryLabel: category },
+  }))
+}
+
+const { category } = Astro.params
+const { categoryLabel } = Astro.props
+
+const allArticles = getPublishedArticles()
+const articles = allArticles.filter(a => a.category === categoryLabel)
+const allCategories = getCategories(allArticles)
+
+const description = getCategoryDescription(category)
+const pageTitle = `${categoryLabel} — Статті`
+const ogDescription = `${description} Блог Андрія Клименка.`
 ---
 
-<Layout title="Статті" description="Всі статті Андрія Клименка про продукти, аналітику та технології.">
+<Layout
+  title={pageTitle}
+  description={ogDescription}
+>
   <main class="articles-main">
     <div class="articles-header">
       <h1 class="articles-title">Статті</h1>
@@ -17,16 +38,19 @@ const categories = getCategories(articles)
 
     <!-- Фільтри -->
     <div class="filters">
-      <a href="/articles/" class="filter-chip active">Всі</a>
-      {categories.map(cat => (
-        <a href={`/articles/category/${slugifyCategory(cat)}/`} class="filter-chip">
+      <a href="/articles/" class="filter-chip">Всі</a>
+      {allCategories.map(cat => (
+        <a
+          href={`/articles/category/${slugifyCategory(cat)}/`}
+          class={`filter-chip ${cat === categoryLabel ? 'active' : ''}`}
+        >
           {cat}
         </a>
       ))}
     </div>
 
     {articles.length === 0 ? (
-      <p style="color: var(--color-muted);">Статей поки немає.</p>
+      <p style="color: var(--color-muted);">Статей у цій категорії поки немає.</p>
     ) : (
       <div class="articles-grid">
         {articles.map(article => (
@@ -46,6 +70,21 @@ const categories = getCategories(articles)
 
   .articles-header {
     margin-bottom: 32px;
+  }
+
+  .articles-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    color: var(--color-ink);
+  }
+
+  .articles-subtitle {
+    font-size: 16px;
+    color: var(--color-secondary);
+    margin: 0;
+    line-height: 1.6;
   }
 
   .filters {
@@ -78,21 +117,6 @@ const categories = getCategories(articles)
     background: var(--color-accent);
     border-color: var(--color-accent);
     color: #fff;
-  }
-
-  .articles-title {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin: 0 0 12px;
-    color: var(--color-ink);
-  }
-
-  .articles-subtitle {
-    font-size: 16px;
-    color: var(--color-secondary);
-    margin: 0;
-    line-height: 1.6;
   }
 
   .articles-grid {
