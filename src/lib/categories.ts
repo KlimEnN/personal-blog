@@ -33,13 +33,43 @@ export function getCategories(articles: Array<{ category: string | null; categor
   return [...map.entries()].map(([slug, label]) => ({ slug, label }))
 }
 
-export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  'ai': 'Статті про штучний інтелект, AI-інструменти та автоматизацію в продуктовій розробці.',
-  'menedzhment': 'Статті про управління, стратегію та прийняття рішень для топ-менеджерів.',
-  'bez-rozrobnykiv': 'Як будувати цифрові продукти без залучення розробників — інструменти, підходи, досвід.',
-  'product-management': 'Продуктове управління: пріоритизація, метрики, процеси та побудова команд.',
+type CategoryMeta = {
+  title: string
+  h1: string
+  description: string
+}
+
+export const CATEGORY_META: Record<string, CategoryMeta> = {
+  'ai': {
+    title: 'AI та штучний інтелект — Статті',
+    h1: 'AI та штучний інтелект',
+    description: 'Статті про штучний інтелект, AI-інструменти та автоматизацію в продуктовій розробці. Практичний досвід продуктового менеджера.',
+  },
+  'management': {
+    title: 'Менеджмент та стратегія — Статті',
+    h1: 'Менеджмент та стратегія',
+    description: 'Статті про управління компаніями, стратегічне мислення та прийняття рішень для топ-менеджерів і власників бізнесу.',
+  },
+  'no-code': {
+    title: 'Без розробників — Статті',
+    h1: 'Без розробників',
+    description: 'Як будувати цифрові продукти без залучення розробників — no-code інструменти, AI-асистенти та практичний досвід.',
+  },
+  'product-management': {
+    title: 'Product Management — Статті',
+    h1: 'Product Management',
+    description: 'Продуктове управління: пріоритизація ініціатив, робота з метриками, процеси та побудова продуктових команд.',
+  },
+}
+
+export function getCategoryMeta(slug: string): CategoryMeta {
+  return CATEGORY_META[slug] ?? {
+    title: 'Статті',
+    h1: 'Статті',
+    description: 'Статті Андрія Клименка про продукти, аналітику та технології.',
+  }
 }
 
 export function getCategoryDescription(slug: string): string {
-  return CATEGORY_DESCRIPTIONS[slug] ?? `Статті в категорії.`
+  return getCategoryMeta(slug).description
 }
