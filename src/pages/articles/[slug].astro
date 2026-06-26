@@ -15,7 +15,8 @@ const article = getArticleBySlug(slug)
 
 if (!article) return Astro.redirect('/articles')
 
-const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
+const articleDate = article.date || article.createdAt
+const date = new Date(articleDate).toLocaleDateString('uk-UA', {
   year: 'numeric', month: 'long', day: 'numeric'
 })
 ---
@@ -25,7 +26,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
   description={article.description ?? undefined}
   ogImage={article.image?.og}
   ogType="article"
-  publishedTime={article.createdAt}
+  publishedTime={articleDate}
 >
   <main class="article-main">
     <!-- Back link -->
@@ -51,7 +52,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
           <span class="author-name">{SITE.author}</span>
         </div>
         <span class="meta-divider">·</span>
-        <time class="meta-text" datetime={article.createdAt}>{date}</time>
+        <time class="meta-text" datetime={articleDate}>{date}</time>
         {article.readTime && (
           <>
             <span class="meta-divider">·</span>

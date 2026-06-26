@@ -65,7 +65,7 @@ do {
   const response = await notion.dataSources.query({
     data_source_id: databaseId,
     filter: { property: 'Status', status: { equals: 'Published' } },
-    sorts: [{ timestamp: 'created_time', direction: 'descending' }],
+    sorts: [{ property: 'Data', direction: 'descending' }],
     ...(cursor ? { start_cursor: cursor } : {}),
   })
   allPages.push(...response.results)
@@ -93,6 +93,8 @@ for (const page of allPages) {
   seenSlugs.add(rawSlug)
 
   const slug = rawSlug
+  // Use explicit Date property, fall back to created_time
+  const date = page.properties.Data?.date?.start ?? page.created_time?.split('T')[0] ?? null
   const createdAt = page.created_time
   const category = page.properties.Category?.select?.name ?? null
   const rawCategorySlug = page.properties.CategorySlug?.rich_text?.[0]?.plain_text?.trim() ?? null
@@ -132,7 +134,7 @@ for (const page of allPages) {
     console.log(`  ✓ ${title}${featured ? ' ⭐' : ''}`)
   }
 
-  articles.push({ id: page.id, title, slug, createdAt, category, categorySlug, description, readTime, featured, content, image })
+  articles.push({ id: page.id, title, slug, date, createdAt, category, categorySlug, description, readTime, featured, content, image })
 }
 
 const outDir = join(__dirname, '../src/data')

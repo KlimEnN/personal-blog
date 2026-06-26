@@ -12,7 +12,7 @@ export function GET(context: APIContext) {
     site: context.site!,
     items: articles.map((article) => ({
       title: article.title,
-      pubDate: new Date(article.createdAt),
+      pubDate: new Date(article.date || article.createdAt),
       description: article.description ?? undefined,
       link: `/articles/${article.slug}/`,
       categories: article.category ? [article.category] : [],

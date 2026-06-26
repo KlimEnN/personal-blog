@@ -7,7 +7,8 @@ interface Props {
 
 const { article } = Astro.props
 
-const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
+const articleDate = article.date || article.createdAt
+const date = new Date(articleDate).toLocaleDateString('uk-UA', {
   year: 'numeric', month: 'long', day: 'numeric'
 })
 ---
@@ -47,7 +48,7 @@ const date = new Date(article.createdAt).toLocaleDateString('uk-UA', {
     )}
 
     <div class="card-meta">
-      <time datetime={article.createdAt}>{date}</time>
+      <time datetime={articleDate}>{date}</time>
       {article.readTime && (
         <>
           <span class="meta-dot">·</span>

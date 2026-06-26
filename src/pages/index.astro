@@ -94,8 +94,8 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
             </div>
             <span style="font-size: 13px; color: var(--color-secondary);">Андрій Клименко</span>
             <span style="color: var(--color-border);">·</span>
-            <time style="font-size: 13px; color: var(--color-muted);" datetime={featured.createdAt}>
-              {new Date(featured.createdAt).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
+            <time style="font-size: 13px; color: var(--color-muted);" datetime={featured.date || featured.createdAt}>
+              {new Date(featured.date || featured.createdAt).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}
             </time>
           </div>
         </div>
