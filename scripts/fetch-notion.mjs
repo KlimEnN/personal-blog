@@ -28,6 +28,24 @@ function validateSlug(slug) {
   return SLUG_REGEX.test(slug)
 }
 
+function preprocessMarkdown(markdown) {
+  // Convert callout blocks to markdown blockquotes
+  let processed = markdown.replace(/<callout icon="([^"]+)">\n?([\s\S]*?)\n?<\/callout>/g, (match, icon, content) => {
+    const cleanContent = content.trim().replace(/^\t+/, '').replace(/^ +/, '')
+    const lines = cleanContent.split('\n').map(line => `> ${line.trim()}`).join('\n')
+    return `> ${icon} ${lines.substring(2)}\n\n`
+  })
+
+  // Ensure double newlines after any other custom tags to help the marked parser
+  processed = processed.replace(/(<\/callout>|<\/details>|<\/toggle>)\n([^\n])/g, '$1\n\n$2')
+
+  // Ensure a blank line before horizontal rules (---) if there isn't one.
+  // This prevents the preceding paragraph from being parsed as a Setext H2 header.
+  processed = processed.replace(/\n([^\n]+)\n(---+)\n/g, '\n$1\n\n$2\n')
+
+  return processed
+}
+
 const notion = new Client({ auth: token })
 
 console.log('Fetching articles from Notion...')
@@ -83,7 +101,7 @@ for (const page of allPages) {
     console.warn(`  ⚠ "${title}" content is truncated by Notion API`)
   }
 
-  const rawHtml = marked(md.markdown ?? '')
+  const rawHtml = marked(preprocessMarkdown(md.markdown ?? ''))
   const content = sanitizeHtml(rawHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
       'h1', 'h2', 'h3', 'h4', 'img', 'figure', 'figcaption',
