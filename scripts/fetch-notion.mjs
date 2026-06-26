@@ -43,6 +43,14 @@ function preprocessMarkdown(markdown) {
   // This prevents the preceding paragraph from being parsed as a Setext H2 header.
   processed = processed.replace(/\n([^\n]+)\n(---+)\n/g, '\n$1\n\n$2\n')
 
+  // Notion returns single \n between paragraphs, but marked needs \n\n to
+  // create separate <p> tags. Convert single newlines between non-empty text
+  // lines into double newlines. Skip lines that are part of lists, headings,
+  // blockquotes, code fences, or already have blank lines.
+  processed = processed.replace(/\n/g, '\n\n')
+  // Collapse triple+ newlines back to double (avoid excessive spacing)
+  processed = processed.replace(/\n{3,}/g, '\n\n')
+
   return processed
 }
 
