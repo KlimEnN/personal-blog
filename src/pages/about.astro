@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import Breadcrumb from '../components/Breadcrumb.astro'
 import { SITE } from '../config/site'
 
 const personSchema = {
@@ -22,6 +23,11 @@ const personSchema = {
   schema={personSchema}
 >
   <main style="max-width: 680px; margin: 0 auto; padding: 64px 32px 80px;">
+    <Breadcrumb items={[
+      { label: 'Головна', href: '/' },
+      { label: 'Про мене' },
+    ]} />
+
     <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 40px;">Про мене</h1>
 
     <div class="prose prose-gray max-w-none">

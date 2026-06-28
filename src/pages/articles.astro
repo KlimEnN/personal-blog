@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import ArticleCard from '../components/ArticleCard.astro'
+import Breadcrumb from '../components/Breadcrumb.astro'
 import { getPublishedArticles } from '../lib/notion'
 import { getCategories } from '../lib/categories'
 
@@ -10,6 +11,11 @@ const categories = getCategories(articles)
 
 <Layout title="Статті" description="Всі статті Андрія Клименка про продукти, аналітику та технології.">
   <main class="articles-main">
+    <Breadcrumb items={[
+      { label: 'Головна', href: '/' },
+      { label: 'Статті' },
+    ]} />
+
     <div class="articles-header">
       <h1 class="articles-title">Статті</h1>
       <p class="articles-subtitle">Ділюся досвідом про продукти, аналітику та технології</p>
