@@ -1,0 +1,74 @@
+---
+interface Crumb {
+  label: string
+  href?: string
+}
+
+interface Props {
+  items: Crumb[]
+}
+
+const { items } = Astro.props
+---
+
+<nav aria-label="Навігація" class="breadcrumb">
+  {items.map((item, i) => (
+    <span class="breadcrumb-item">
+      {i > 0 && <span class="breadcrumb-sep" aria-hidden="true">/</span>}
+      {item.href
+        ? <a href={item.href} class="breadcrumb-link">{item.label}</a>
+        : <span class="breadcrumb-current" aria-current="page">{item.label}</span>
+      }
+    </span>
+  ))}
+</nav>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 32px;
+  }
+
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .breadcrumb-sep {
+    color: var(--color-border);
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+
+  .breadcrumb-link {
+    font-size: 13px;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-accent);
+  }
+
+  .breadcrumb-current {
+    font-size: 13px;
+    color: var(--color-secondary);
+    /* truncate long article titles on mobile */
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 640px) {
+    .breadcrumb {
+      margin-bottom: 24px;
+    }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import Breadcrumb from '../../components/Breadcrumb.astro'
 import { getPublishedArticles, getArticleBySlug } from '../../lib/notion'
 import { SITE } from '../../config/site'
 
@@ -65,10 +66,12 @@ const breadcrumbSchema = {
   schema={[articleSchema, breadcrumbSchema]}
 >
   <main class="article-main">
-    <!-- Back link -->
-    <div class="article-nav">
-      <a href="/articles" class="back-link">← Всі статті</a>
-    </div>
+    <!-- Breadcrumb -->
+    <Breadcrumb items={[
+      { label: 'Головна', href: '/' },
+      { label: 'Статті', href: '/articles/' },
+      { label: article.title },
+    ]} />
 
     <!-- Article header -->
     <header class="article-header">
@@ -136,10 +139,6 @@ const breadcrumbSchema = {
     margin: 0 auto;
     padding: 48px 32px 96px;
     overflow-x: hidden;
-  }
-
-  .article-nav {
-    margin-bottom: 48px;
   }
 
   .back-link {

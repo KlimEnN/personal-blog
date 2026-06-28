@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro'
 import ArticleCard from '../../../components/ArticleCard.astro'
+import Breadcrumb from '../../../components/Breadcrumb.astro'
 import { getPublishedArticles } from '../../../lib/notion'
 import { getCategories, getCategorySlug, getCategoryMeta } from '../../../lib/categories'
 
@@ -26,6 +27,12 @@ const ogImage = articles[0]?.image?.og ?? '/og-default.webp'
 
 <Layout title={meta.title} description={meta.description} ogImage={ogImage}>
   <main class="articles-main">
+    <Breadcrumb items={[
+      { label: 'Головна', href: '/' },
+      { label: 'Статті', href: '/articles/' },
+      { label: meta.h1 },
+    ]} />
+
     <div class="articles-header">
       <h1 class="articles-title">{meta.h1}</h1>
       <p class="articles-subtitle">{meta.description}</p>
