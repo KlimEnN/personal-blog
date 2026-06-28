@@ -10,9 +10,10 @@ interface Props {
   ogImage?: string
   ogType?: 'website' | 'article'
   publishedTime?: string
+  schema?: object | object[]
 }
 
-const { title, description = SITE.description, ogImage, ogType = 'website', publishedTime } = Astro.props
+const { title, description = SITE.description, ogImage, ogType = 'website', publishedTime, schema } = Astro.props
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 const fullTitle = `${title} — ${SITE.name}`
@@ -80,6 +81,10 @@ const ogImageURL = ogImage ? new URL(ogImage, SITE.url).toString() : null
 
     <!-- Sitemap -->
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- Schema.org JSON-LD -->
+    {schema && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(Array.isArray(schema) ? schema : [schema])} />
+    )}
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
   </head>
