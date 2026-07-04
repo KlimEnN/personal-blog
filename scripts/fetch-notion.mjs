@@ -112,6 +112,10 @@ for (const page of allPages) {
   }
 
   const rawHtml = marked(preprocessMarkdown(md.markdown ?? ''))
+    // Notion saves internal blog links as app.notion.com/blog/[slug] — rewrite to site URLs
+    .replace(/https?:\/\/app\.notion\.com\/blog\/([a-z0-9-]+)/g,
+      'https://blog.klymenko.space/articles/$1/')
+
   const content = sanitizeHtml(rawHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
       'h1', 'h2', 'h3', 'h4', 'img', 'figure', 'figcaption',
