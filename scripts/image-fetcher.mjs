@@ -1,4 +1,4 @@
-import { createWriteStream, mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs'
+import { createWriteStream, mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { pipeline } from 'stream/promises'
@@ -18,7 +18,6 @@ const MET_API = 'https://collectionapi.metmuseum.org/public/collection/v1'
 const ARTWORK_IDS = [
   436535,  // Vincent van Gogh — Wheat Field with Cypresses
   437984,  // Vincent van Gogh — Self-Portrait with a Straw Hat
-  438722,  // Georges Seurat — A Sunday on La Grande Jatte (study)
   435882,  // Claude Monet — Bridge over a Pond of Water Lilies
   437329,  // Paul Cézanne — The Card Players
   436121,  // Paul Gauguin — Ia Orana Maria
@@ -38,14 +37,25 @@ const ARTWORK_IDS = [
   436533,  // Vincent van Gogh — The Flowering Orchard
   459123,  // Jan Vermeer — Study of a Young Woman
   437246,  // Frans Hals — Young Man and Woman in an Inn
-  436122,  // Paul Gauguin — Two Tahitian Women
-  436533,  // Vincent van Gogh — The Flowering Orchard
+  436122,  // Edgar Degas — The Collector of Prints
   435817,  // Claude Monet — Garden at Sainte-Adresse
   484935,  // Rembrandt — Self-Portrait
   436955,  // Camille Pissarro — Jalais Hill, Pontoise
-  437329,  // Paul Cézanne — The Card Players
   437980,  // Vincent van Gogh — Sunflowers
   435868,  // Claude Monet — Women in the Garden
+  436532,  // Vincent van Gogh — Irises
+  437998,  // Vincent van Gogh — Cypresses
+  435650,  // Georges Seurat — Circus Sideshow
+  436003,  // Paul Cézanne — Still Life with Apples
+  437247,  // Jan Steen — Merry Company on a Terrace
+  437379,  // Pieter de Hooch — A Dutch Courtyard
+  436105,  // Mary Cassatt — Young Mother Sewing
+  437397,  // Édouard Manet — Boating
+  437808,  // Henri de Toulouse-Lautrec — The Englishman at the Moulin Rouge
+  437690,  // Georges Seurat — Study for A Sunday Afternoon
+  459055,  // Johannes Vermeer — Woman with a Lute
+  435621,  // Paul Signac — The Bonaventure Pine
+  436996,  // Alfred Sisley — The Seine at Argenteuil
 ]
 
 // Deterministic index from slug
@@ -125,13 +135,31 @@ export async function fetchArticleImage(slug) {
     }
   }
 
-  let artwork
+  // Collect artwork IDs already used by other articles
+  const usedIds = new Set()
+  if (existsSync(IMAGES_DIR)) {
+    for (const otherSlug of readdirSync(IMAGES_DIR)) {
+      if (otherSlug === slug) continue
+      const otherMeta = join(IMAGES_DIR, otherSlug, 'meta.json')
+      if (!existsSync(otherMeta)) continue
+      try {
+        const m = JSON.parse(readFileSync(otherMeta, 'utf-8'))
+        if (m.artworkId) usedIds.add(m.artworkId)
+      } catch {}
+    }
+  }
 
-  // Try current ID, fallback to next few if no image
-  for (let i = 0; i < 5; i++) {
-    const id = ARTWORK_IDS[(slugToIndex(slug) + i) % ARTWORK_IDS.length]
+  let artwork
+  let chosenId
+
+  // Try from slug's hash position, skipping already-used IDs
+  const start = slugToIndex(slug)
+  for (let i = 0; i < ARTWORK_IDS.length; i++) {
+    const id = ARTWORK_IDS[(start + i) % ARTWORK_IDS.length]
+    if (usedIds.has(id)) continue
     try {
       artwork = await getArtwork(id)
+      chosenId = id
       break
     } catch {
       continue
@@ -148,11 +176,10 @@ export async function fetchArticleImage(slug) {
   await processImage(tmpPath, ogPath, 1200, 630)
 
   // Remove temp file
-  const { unlinkSync } = await import('fs')
-  try { unlinkSync(tmpPath) } catch {}
+  try { (await import('fs')).unlinkSync(tmpPath) } catch {}
 
-  // Save metadata so repeated builds don't lose alt/credit
-  writeFileSync(metaPath, JSON.stringify({ alt: artwork.alt, credit: artwork.credit }, null, 2))
+  // Save metadata including artworkId to prevent reuse
+  writeFileSync(metaPath, JSON.stringify({ alt: artwork.alt, credit: artwork.credit, artworkId: chosenId }, null, 2))
 
   return {
     card: `/images/articles/${slug}/card.webp`,
