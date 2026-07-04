@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "node --env-file-if-exists=.env scripts/ensure-data.mjs && astro dev",
-    "build": "node --env-file-if-exists=.env scripts/fetch-notion.mjs && astro check && astro build",
+    "build": "node --env-file-if-exists=.env scripts/fetch-notion.mjs && node scripts/test-links.mjs && astro check && astro build",
     "check": "astro check",
     "preview": "astro preview",
     "astro": "astro"
