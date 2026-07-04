@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /404
 
-Sitemap: https://blog.klymenko.space/sitemap-index.xml
+Sitemap: https://klymenko.space/sitemap-index.xml

@@ -32,7 +32,7 @@ const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <text x="600" y="380" font-family="system-ui, sans-serif" font-size="42" font-weight="800"
     fill="#1A1A1C" text-anchor="middle">Андрій Клименко</text>
   <text x="600" y="445" font-family="system-ui, sans-serif" font-size="24" font-weight="400"
-    fill="#6A6A6F" text-anchor="middle">Продуктовий менеджер · blog.klymenko.space</text>
+    fill="#6A6A6F" text-anchor="middle">Продуктовий менеджер · klymenko.space</text>
 </svg>`
 
 await sharp(Buffer.from(svg))

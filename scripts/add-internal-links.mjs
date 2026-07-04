@@ -19,7 +19,7 @@ const require = createRequire(import.meta.url)
 const { Client } = require('@notionhq/client')
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN })
-const BASE_URL = 'https://blog.klymenko.space'
+const BASE_URL = 'https://klymenko.space'
 
 // Page IDs from local articles.json cache
 const PAGES = {

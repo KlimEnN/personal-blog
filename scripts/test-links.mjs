@@ -17,7 +17,7 @@ const articlesPath = join(__dirname, '../src/data/articles.json')
 const articles = JSON.parse(readFileSync(articlesPath, 'utf-8'))
 const existingSlugs = new Set(articles.map(a => a.slug))
 
-const SITE = 'https://blog.klymenko.space'
+const SITE = 'https://klymenko.space'
 const INTERNAL_LINK_RE = new RegExp(`href="${SITE}/articles/([^/"]+)/?"`, 'g')
 const NOTION_LINK_RE = /href="https?:\/\/app\.notion\.com\/blog\/([^"]+)"/g
 

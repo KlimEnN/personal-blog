@@ -112,9 +112,12 @@ for (const page of allPages) {
   }
 
   const rawHtml = marked(preprocessMarkdown(md.markdown ?? ''))
-    // Notion saves internal blog links as app.notion.com/blog/[slug] — rewrite to site URLs
+    // Rewrite old blog subdomain links to the new root domain
+    .replace(/https?:\/\/blog\.klymenko\.space\/articles\//g,
+      'https://klymenko.space/articles/')
+    // Rewrite Notion internal links (app.notion.com/blog/[slug]) to site URLs
     .replace(/https?:\/\/app\.notion\.com\/blog\/([a-z0-9-]+)/g,
-      'https://blog.klymenko.space/articles/$1/')
+      'https://klymenko.space/articles/$1/')
 
   const content = sanitizeHtml(rawHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
