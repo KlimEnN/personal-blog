@@ -107,6 +107,10 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-ink);
 }
 
+.prose strong {
+  color: var(--color-ink);
+}
+
 .prose a {
   color: var(--color-accent);
   text-decoration: underline;
@@ -143,6 +147,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Prose dark mode overrides */
 .prose code {
   background: var(--color-code-bg);
+  color: var(--color-ink);
   border-radius: 4px;
   padding: 2px 5px;
   font-size: 0.875em;
