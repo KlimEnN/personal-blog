@@ -20,7 +20,7 @@ const today = new Date().toISOString().split('T')[0];
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://blog.klymenko.space',
+  site: 'https://klymenko.space',
   vite: {
     plugins: [tailwindcss()]
   },
@@ -31,11 +31,11 @@ export default defineConfig({
         const articles = getArticles();
         const url = item.url;
 
-        if (url === 'https://blog.klymenko.space/') {
+        if (url === 'https://klymenko.space/') {
           return { ...item, changefreq: EnumChangefreq.DAILY, priority: 1.0, lastmod: today };
         }
 
-        if (url === 'https://blog.klymenko.space/articles/') {
+        if (url === 'https://klymenko.space/articles/') {
           return { ...item, changefreq: EnumChangefreq.DAILY, priority: 0.9, lastmod: today };
         }
 
