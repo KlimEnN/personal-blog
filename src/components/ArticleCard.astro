@@ -24,8 +24,8 @@ const date = new Date(articleDate).toLocaleDateString('uk-UA', {
       <img
         src={article.image.card}
         alt={article.image.alt ?? article.title}
-        width="800"
-        height="480"
+        width="640"
+        height="384"
         loading={priority ? "eager" : "lazy"}
         fetchpriority={priority ? "high" : "auto"}
         decoding="async"

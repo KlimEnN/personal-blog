@@ -114,7 +114,7 @@ async function getArtwork(id) {
 async function processImage(sourcePath, destPath, width, height) {
   await sharp(sourcePath)
     .resize(width, height, { fit: 'cover', position: 'attention' })
-    .webp({ quality: 82 })
+    .webp({ quality: 72 })
     .toFile(destPath)
 }
 
@@ -172,7 +172,7 @@ export async function fetchArticleImage(slug) {
 
   const tmpPath = join(dir, '_original.tmp')
   await downloadImage(artwork.imageUrl, tmpPath)
-  await processImage(tmpPath, cardPath, 800, 480)
+  await processImage(tmpPath, cardPath, 640, 384)
   await processImage(tmpPath, ogPath, 1200, 630)
 
   // Remove temp file
