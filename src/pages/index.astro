@@ -118,8 +118,8 @@ const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).s
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
-        {articles.map(article => (
-          <ArticleCard article={article} />
+        {articles.map((article, i) => (
+          <ArticleCard article={article} priority={i === 0} />
         ))}
       </div>
     </section>

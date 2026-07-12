@@ -3,9 +3,10 @@ import type { Article } from '../lib/notion'
 
 interface Props {
   article: Article
+  priority?: boolean
 }
 
-const { article } = Astro.props
+const { article, priority = false } = Astro.props
 
 const articleDate = article.date || article.createdAt
 const date = new Date(articleDate).toLocaleDateString('uk-UA', {
@@ -25,7 +26,8 @@ const date = new Date(articleDate).toLocaleDateString('uk-UA', {
         alt={article.image.alt ?? article.title}
         width="800"
         height="480"
-        loading="lazy"
+        loading={priority ? "eager" : "lazy"}
+        fetchpriority={priority ? "high" : "auto"}
         decoding="async"
       />
     ) : (
