@@ -6,9 +6,10 @@ import { SITE } from '../config/site'
 
 const featured = getFeaturedArticle()
 const articles = getPublishedArticles().filter(a => a.slug !== featured?.slug).slice(0, 3)
+const lcpImage = articles[0]?.image?.card
 ---
 
-<Layout title="Головна" description={SITE.description} ogImage="/og-default.webp">
+<Layout title="Головна" description={SITE.description} ogImage="/og-default.webp" preloadImage={lcpImage}>
 
   <!-- Hero -->
   <section style="max-width: var(--container-max); margin: 0 auto; padding: 80px 32px 64px;">
