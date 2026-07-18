@@ -5,20 +5,20 @@ interface Props {
 const { slug } = Astro.props
 ---
 
-<div class="article-stats" id="article-stats" data-slug={slug}>
+<div class="article-stats" data-stats-root data-slug={slug}>
   <span class="stats-views">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
       <circle cx="12" cy="12" r="3"/>
     </svg>
-    <span id="view-count">—</span>
+    <span data-view-count>—</span>
   </span>
 
-  <button class="stats-like" id="like-btn" aria-label="Поставити лайк" type="button">
-    <svg id="like-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <button class="stats-like" data-like-btn aria-label="Поставити лайк" type="button">
+    <svg data-like-icon width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
     </svg>
-    <span id="like-count">—</span>
+    <span data-like-count>—</span>
   </button>
 </div>
 
@@ -66,52 +66,71 @@ const { slug } = Astro.props
 </style>
 
 <script>
-  const el = document.getElementById('article-stats');
-  if (el) {
+  const statsCache = new Map<string, Promise<{ views: number; likes: number }>>();
+
+  function getStats(slug: string) {
+    if (!statsCache.has(slug)) {
+      statsCache.set(slug, fetch(`/api/stats/${slug}`).then(r => r.json()));
+    }
+    return statsCache.get(slug)!;
+  }
+
+  function updateAllViews(slug: string, text: string) {
+    document.querySelectorAll<HTMLElement>(`[data-stats-root][data-slug="${slug}"] [data-view-count]`)
+      .forEach(e => e.textContent = text);
+  }
+
+  function updateAllLikes(slug: string, text: string) {
+    document.querySelectorAll<HTMLElement>(`[data-stats-root][data-slug="${slug}"] [data-like-count]`)
+      .forEach(e => e.textContent = text);
+    document.querySelectorAll<HTMLElement>(`[data-stats-root][data-slug="${slug}"] [data-like-btn]`)
+      .forEach(b => b.classList.add('liked'));
+  }
+
+  function formatNum(n: number): string {
+    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+    return String(n);
+  }
+
+  function initStats(el: HTMLElement) {
     const slug = el.dataset.slug!;
-    const viewEl = document.getElementById('view-count');
-    const likeEl = document.getElementById('like-count');
-    const likeBtn = document.getElementById('like-btn') as HTMLButtonElement;
+    const likeBtn = el.querySelector<HTMLButtonElement>('[data-like-btn]');
     const likedKey = `liked:${slug}`;
     const viewedKey = `viewed:${slug}`;
 
-    // Restore liked state
     if (localStorage.getItem(likedKey)) {
       likeBtn?.classList.add('liked');
     }
 
-    // Fetch current stats
-    fetch(`/api/stats/${slug}`)
-      .then(r => r.json())
-      .then((data: { views: number; likes: number }) => {
-        if (viewEl) viewEl.textContent = formatNum(data.views);
-        if (likeEl) likeEl.textContent = formatNum(data.likes);
+    getStats(slug)
+      .then(data => {
+        updateAllViews(slug, formatNum(data.views));
+        updateAllLikes(slug, formatNum(data.likes));
+        if (localStorage.getItem(likedKey)) {
+          document.querySelectorAll<HTMLElement>(`[data-stats-root][data-slug="${slug}"] [data-like-btn]`)
+            .forEach(b => b.classList.add('liked'));
+        }
       })
       .catch(() => {
-        if (viewEl) viewEl.textContent = '';
-        if (likeEl) likeEl.textContent = '';
+        el.querySelectorAll<HTMLElement>('[data-view-count],[data-like-count]')
+          .forEach(e => e.textContent = '');
       });
 
-    // Count view — once per session per article
     if (!sessionStorage.getItem(viewedKey)) {
       sessionStorage.setItem(viewedKey, '1');
       fetch(`/api/view/${slug}`, { method: 'POST' })
         .then(r => r.json())
-        .then((data: { views: number }) => {
-          if (viewEl) viewEl.textContent = formatNum(data.views);
-        })
+        .then((data: { views: number }) => updateAllViews(slug, formatNum(data.views)))
         .catch(() => {});
     }
 
-    // Like button
     likeBtn?.addEventListener('click', async () => {
       if (localStorage.getItem(likedKey)) return;
       likeBtn.disabled = true;
       try {
         const r = await fetch(`/api/like/${slug}`, { method: 'POST' });
         const data: { likes: number } = await r.json();
-        if (likeEl) likeEl.textContent = formatNum(data.likes);
-        likeBtn.classList.add('liked');
+        updateAllLikes(slug, formatNum(data.likes));
         localStorage.setItem(likedKey, '1');
       } finally {
         likeBtn.disabled = false;
@@ -119,8 +138,13 @@ const { slug } = Astro.props
     });
   }
 
-  function formatNum(n: number): string {
-    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
-    return String(n);
-  }
+  // init only first instance per slug — helpers update all
+  const seen = new Set<string>();
+  document.querySelectorAll<HTMLElement>('[data-stats-root]').forEach(el => {
+    const slug = el.dataset.slug!;
+    if (!seen.has(slug)) {
+      seen.add(slug);
+      initStats(el);
+    }
+  });
 </script>

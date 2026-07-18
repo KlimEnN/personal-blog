@@ -129,6 +129,10 @@ const breadcrumbSchema = {
 
     <!-- Footer -->
     <div class="article-footer">
+      <div class="footer-stats">
+        <p class="footer-stats-label">Сподобалась стаття?</p>
+        <ArticleStats slug={article.slug} />
+      </div>
       <a href="/articles" class="back-link">← Повернутися до статей</a>
     </div>
   </main>
@@ -259,6 +263,22 @@ const breadcrumbSchema = {
     margin-top: 80px;
     padding-top: 40px;
     border-top: 1px solid var(--color-border);
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .footer-stats-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-secondary);
+    margin: 0;
   }
 
   @media (max-width: 640px) {

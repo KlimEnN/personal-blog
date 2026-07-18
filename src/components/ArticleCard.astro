@@ -57,6 +57,21 @@ const date = new Date(articleDate).toLocaleDateString('uk-UA', {
           <span>{article.readTime} хв</span>
         </>
       )}
+      <span class="card-stats" data-card-stats={article.slug}>
+        <span class="card-stat">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span data-cv>—</span>
+        </span>
+        <span class="card-stat">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span data-cl>—</span>
+        </span>
+      </span>
     </div>
   </div>
 </a>
@@ -157,4 +172,41 @@ const date = new Date(articleDate).toLocaleDateString('uk-UA', {
   .meta-dot {
     color: var(--color-border);
   }
+
+  .card-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .card-stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--color-muted);
+  }
 </style>
+
+<script>
+  function fmt(n: number): string {
+    if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+    return String(n);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-card-stats]').forEach(el => {
+    const slug = el.dataset.cardStats!;
+    fetch(`/api/stats/${slug}`)
+      .then(r => r.json())
+      .then((data: { views: number; likes: number }) => {
+        const vc = el.querySelector('[data-cv]');
+        const lc = el.querySelector('[data-cl]');
+        if (vc) vc.textContent = fmt(data.views);
+        if (lc) lc.textContent = fmt(data.likes);
+      })
+      .catch(() => {
+        el.style.display = 'none';
+      });
+  });
+</script>
