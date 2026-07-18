@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import Breadcrumb from '../../components/Breadcrumb.astro'
+import ArticleStats from '../../components/ArticleStats.astro'
 import { getPublishedArticles, getArticleBySlug } from '../../lib/notion'
 import { SITE } from '../../config/site'
 
@@ -98,6 +99,8 @@ const breadcrumbSchema = {
             <span class="meta-text">{article.readTime} хв читання</span>
           </>
         )}
+        <span class="meta-divider">·</span>
+        <ArticleStats slug={article.slug} />
       </div>
     </header>
 

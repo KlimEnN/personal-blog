@@ -11,3 +11,7 @@ directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "404-page"
 run_worker_first = true
+
+[[kv_namespaces]]
+binding = "BLOG_STATS"
+id = "cc6d1aad0ba54971922657517f8cf0fb"
