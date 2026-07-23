@@ -76,7 +76,7 @@ const articles = []
 const seenSlugs = new Set()
 
 for (const page of allPages) {
-  const title = page.properties.Name?.title?.[0]?.plain_text ?? 'Без назви'
+  const title = page.properties.Name?.title?.map(r => r.plain_text).join('') ?? 'Без назви'
   const rawSlug = page.properties.Slug?.rich_text?.[0]?.plain_text ?? ''
 
   // Validate slug
@@ -99,7 +99,7 @@ for (const page of allPages) {
   const category = page.properties.Category?.select?.name ?? null
   const rawCategorySlug = page.properties.CategorySlug?.rich_text?.[0]?.plain_text?.trim() ?? null
   const categorySlug = rawCategorySlug && validateSlug(rawCategorySlug) ? rawCategorySlug : null
-  const rawDescription = page.properties.Description?.rich_text?.[0]?.plain_text ?? null
+  const rawDescription = page.properties.Description?.rich_text?.map(r => r.plain_text).join('') ?? null
   const description = rawDescription ? rawDescription.slice(0, 160) : null
   const rawReadTime = page.properties.ReadTime?.number ?? null
   const readTime = typeof rawReadTime === 'number' && rawReadTime > 0 ? Math.round(rawReadTime) : null
