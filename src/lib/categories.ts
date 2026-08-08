@@ -28,7 +28,7 @@ export function getCategories(articles: Array<{ category: string | null; categor
   for (const a of articles) {
     if (!a.category) continue
     const slug = getCategorySlug(a)!
-    if (!map.has(slug)) map.set(slug, a.category)
+    if (!map.has(slug)) map.set(slug, CATEGORY_META[slug]?.h1 ?? a.category)
   }
   return [...map.entries()].map(([slug, label]) => ({ slug, label }))
 }
@@ -40,6 +40,11 @@ type CategoryMeta = {
 }
 
 export const CATEGORY_META: Record<string, CategoryMeta> = {
+  'books': {
+    title: 'Книги — Статті',
+    h1: 'Книги',
+    description: 'Огляди книг про продукти, менеджмент і стратегію — головні ідеї та практичні висновки.',
+  },
   'ai': {
     title: 'AI та штучний інтелект — Статті',
     h1: 'AI та штучний інтелект',
