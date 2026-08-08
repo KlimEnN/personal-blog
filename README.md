@@ -1,6 +1,6 @@
-# blog.klymenko.space
+# klymenko.space
 
-Персональний блог Андрія Клименка. [blog.klymenko.space](https://blog.klymenko.space)
+Персональний блог Андрія Клименка. [klymenko.space](https://klymenko.space)
 
 ## Стек
 
@@ -26,12 +26,14 @@
 
 ## Локальна розробка
 
-### 1. Клонувати і встановити залежності
+### 1. Встановити Node.js і залежності
+
+Потрібен Node.js `>=22.12.0` (версія зафіксована в `package.json`).
 
 ```bash
 git clone https://github.com/KlimEnN/personal-blog.git
 cd personal-blog
-npm install
+npm ci
 ```
 
 ### 2. Налаштувати змінні середовища
@@ -47,14 +49,28 @@ cp .env.example .env
 npm run dev
 ```
 
-При першому запуску автоматично підтягне статті з Notion.
+При першому запуску автоматично підтягне статті з Notion, якщо локального кешу `src/data/articles.json` ще немає.
+
+### Робочий цикл із контентом
+
+```bash
+# Явно синхронізувати опубліковані статті та зображення з Notion
+npm run content:sync
+
+# Перевірити й зібрати вже синхронізований контент — без запиту до Notion
+npm run build:cached
+```
+
+`npm run build` лишається командою для CI/deploy: вона синхронізує контент із Notion, перевіряє посилання й типи, а тоді створює production build.
 
 ## Скрипти
 
 | Команда | Опис |
 |---------|------|
 | `npm run dev` | Dev-сервер (авто-фетч Notion якщо немає `articles.json`) |
-| `npm run build` | Фетч Notion → type check → astro build |
+| `npm run content:sync` | Фетч Notion і генерація локального кешу статей |
+| `npm run build:cached` | Перевірка посилань і типів → Astro build без Notion |
+| `npm run build` | Синхронізація Notion → `build:cached` (команда для CI/deploy) |
 | `npm run check` | TypeScript перевірка через `astro check` |
 | `npm run preview` | Переглянути production білд локально |
 
